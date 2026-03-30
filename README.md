@@ -1,7 +1,7 @@
 # <p align="center">URJALINK </p>
 
 <p align="center">
-  <img src="URJALINK logo.png" alt="URJALINK Logo" width="250"/>
+  <img src="./urjalink_logo.png" alt="URJALINK Logo" width="250"/>
 </p>
 
 _An AI-driven sustainability platform that transforms rooftops into renewable power insights: revealing untapped solar potential, energy savings, and carbon reduction opportunities in seconds._
