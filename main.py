@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from api.routes import router
 import os
+from scalar_fastapi import get_scalar_api_reference
 
 app = FastAPI(
     title="Solar Analysis API",
@@ -35,6 +36,13 @@ def read_root():
     if os.path.exists(static_file):
         return FileResponse(static_file)
     return {"message": "Solar Analysis API", "status": "online"}
+
+
+@app.get("/scalar", include_in_schema=False)
+async def scalar_html():
+    return get_scalar_api_reference(
+        openapi_url=app.openapi_url,
+    )
 
 
 if __name__ == "__main__":
