@@ -55,10 +55,10 @@ Together, these components form a unified pipeline: from map selection to data-r
 uv sync # Sets up the .venv and installs the deps
 ```
 
-## Running the Application
+## Running the Application (Development)
 
 ```bash
-uvicorn main:app --reload
+uvicorn run fastapi dev
 ```
 
 ### For Docker
