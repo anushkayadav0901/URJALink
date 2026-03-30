@@ -1,0 +1,543 @@
+{
+  "timestamp": "2025-11-09T01:24:31.588Z",
+  "testData": {
+    "analysis_id": "markdown-test-1762651408830",
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "address": "123 Market Street, San Francisco, CA 94102",
+    "system_size_kw": 10.5,
+    "annual_generation_kwh": 14500,
+    "state": "CA",
+    "zip_code": "94102"
+  },
+  "results": {
+    "installers": {
+      "contentLength": 1952,
+      "validation": {
+        "isValid": true,
+        "issues": [],
+        "warnings": [],
+        "stats": {
+          "totalLength": 1952,
+          "lineCount": 11,
+          "headers": [
+            {
+              "level": 3,
+              "text": "Solar Installers Near123 Market Street, San Francisco, CA941021. **Super Solar Installers**",
+              "line": 5
+            }
+          ],
+          "lists": [
+            {
+              "text": "**Phone**: (279)226-5343 - **Website**: Not available - **Address**:8880 Cal Center Dr (#400), Sacramento, CA95826 - **Distance**: ~40 miles - **Rating**: Not specified - **Specializations**: Residential, Commercial - **Certifications**: Not specified2. **Energy Solarium (NEMA)**",
+              "line": 6
+            },
+            {
+              "text": "**Phone**: Not available - **Website**: Not available - **Address**: San Francisco, CA (Exact address not specified)",
+              "line": 7
+            },
+            {
+              "text": "**Distance**: ~0.2 miles - **Rating**: Not specified - **Specializations**: Residential, Commercial - **Certifications**: Not specified3. **Cal Vet Solar Works**",
+              "line": 8
+            },
+            {
+              "text": "**Phone**: (415)678-9965 - **Website**: [calvetsolarworks.com](http://www.calvetsolarworks.com)",
+              "line": 9
+            },
+            {
+              "text": "**Address**:401 Van Ness Ave, San Francisco, CA94102 - **Distance**: ~0.5 miles - **Rating**: Not specified - **Specializations**: Residential, Commercial - **Certifications**: Not specified4. **SolarCity Commuter Bus Pick-Up**",
+              "line": 10
+            },
+            {
+              "text": "**Phone**: Not available - **Website**: Not available - **Address**:100 Larkin St, San Francisco, CA94102 - **Distance**: ~0.5 miles - **Rating**: Not specified - **Specializations**: Not specified - **Certifications**: Not specified### SummaryNone of the installers provided specified ratings, certifications, or full details due to limitations encountered while fetching from the data source. For further inquiries or detailed ratings and reviews, I'd recommend checking platforms like Google Maps, Yelp, or local energy agencies for certified solar installers in the San Francisco area. If you have other specific queries or need assistance, feel free to ask!",
+              "line": 11
+            }
+          ],
+          "links": [
+            {
+              "text": "calvetsolarworks.com",
+              "url": "http://www.calvetsolarworks.com"
+            }
+          ],
+          "boldText": [
+            "Super Solar Installers",
+            "Phone",
+            "Website",
+            "Address",
+            "Distance",
+            "Rating",
+            "Specializations",
+            "Certifications",
+            "Energy Solarium (NEMA)",
+            "Phone",
+            "Website",
+            "Address",
+            "Distance",
+            "Rating",
+            "Specializations",
+            "Certifications",
+            "Cal Vet Solar Works",
+            "Phone",
+            "Website",
+            "Address",
+            "Distance",
+            "Rating",
+            "Specializations",
+            "Certifications",
+            "SolarCity Commuter Bus Pick-Up",
+            "Phone",
+            "Website",
+            "Address",
+            "Distance",
+            "Rating",
+            "Specializations",
+            "Certifications"
+          ],
+          "italicText": [
+            "Super Solar Installers",
+            "\n - ",
+            "Phone",
+            ": (279)226-5343 - ",
+            "Website",
+            ": Not available - ",
+            "Address",
+            ":8880 Cal Center Dr (#400), Sacramento, CA95826 - ",
+            "Distance",
+            ": ~40 miles - ",
+            "Rating",
+            ": Not specified - ",
+            "Specializations",
+            ": Residential, Commercial - ",
+            "Certifications",
+            ": Not specified2. ",
+            "Energy Solarium (NEMA)",
+            "\n - ",
+            "Phone",
+            ": Not available - ",
+            "Website",
+            ": Not available - ",
+            "Address",
+            ": San Francisco, CA (Exact address not specified)\n - ",
+            "Distance",
+            ": ~0.2 miles - ",
+            "Rating",
+            ": Not specified - ",
+            "Specializations",
+            ": Residential, Commercial - ",
+            "Certifications",
+            ": Not specified3. ",
+            "Cal Vet Solar Works",
+            "\n - ",
+            "Phone",
+            ": (415)678-9965 - ",
+            "Website",
+            ": [calvetsolarworks.com](http://www.calvetsolarworks.com)\n - ",
+            "Address",
+            ":401 Van Ness Ave, San Francisco, CA94102 - ",
+            "Distance",
+            ": ~0.5 miles - ",
+            "Rating",
+            ": Not specified - ",
+            "Specializations",
+            ": Residential, Commercial - ",
+            "Certifications",
+            ": Not specified4. ",
+            "SolarCity Commuter Bus Pick-Up",
+            "\n - ",
+            "Phone",
+            ": Not available - ",
+            "Website",
+            ": Not available - ",
+            "Address",
+            ":100 Larkin St, San Francisco, CA94102 - ",
+            "Distance",
+            ": ~0.5 miles - ",
+            "Rating",
+            ": Not specified - ",
+            "Specializations",
+            ": Not specified - ",
+            "Certifications"
+          ],
+          "codeBlocks": [],
+          "inlineCode": [],
+          "lineBreaks": {
+            "windowsStyle": 0,
+            "unixStyle": 10,
+            "singleNewlines": 6,
+            "doubleNewlines": 2
+          },
+          "specialChars": {
+            "tabs": 0,
+            "carriageReturns": 0,
+            "nullBytes": 0
+          }
+        }
+      },
+      "contentPreview": "I encountered issues while trying to retrieve detailed information about local solar installers due to rate limit errors from the data source. However, I can provide some generic information about the solar installers found in the area.\n\nHere is the information based on the search results:\n\n### Solar Installers Near123 Market Street, San Francisco, CA941021. **Super Solar Installers**\n - **Phone**: (279)226-5343 - **Website**: Not available - **Address**:8880 Cal Center Dr (#400), Sacramento, CA"
+    },
+    "incentives": {
+      "contentLength": 4797,
+      "validation": {
+        "isValid": true,
+        "issues": [],
+        "warnings": [],
+        "stats": {
+          "totalLength": 4797,
+          "lineCount": 61,
+          "headers": [
+            {
+              "level": 2,
+              "text": "**Solar Incentives Overview**",
+              "line": 3
+            },
+            {
+              "level": 3,
+              "text": "**1. Federal Incentives**",
+              "line": 5
+            },
+            {
+              "level": 4,
+              "text": "**Investment Tax Credit (ITC)**",
+              "line": 6
+            },
+            {
+              "level": 4,
+              "text": "**California Solar Initiative (CSI)**",
+              "line": 12
+            },
+            {
+              "level": 3,
+              "text": "**3. Local/Municipal Programs**",
+              "line": 19
+            },
+            {
+              "level": 4,
+              "text": "**GoSolarSF Program**",
+              "line": 20
+            },
+            {
+              "level": 3,
+              "text": "**4. Utility Programs**",
+              "line": 27
+            },
+            {
+              "level": 4,
+              "text": "**Net Energy Metering (NEM)**",
+              "line": 28
+            },
+            {
+              "level": 3,
+              "text": "**Summary of Available Incentives**",
+              "line": 35
+            },
+            {
+              "level": 3,
+              "text": "**Total Estimated Savings Calculation**",
+              "line": 44
+            },
+            {
+              "level": 3,
+              "text": "**Installation Cost**",
+              "line": 47
+            },
+            {
+              "level": 3,
+              "text": "**Payback Period Calculation**",
+              "line": 50
+            }
+          ],
+          "lists": [
+            {
+              "text": "**Type**: Federal- **Description**: Allows homeowners to deduct30% of the cost of installing a solar energy system from federal taxes.",
+              "line": 7
+            },
+            {
+              "text": "**Eligibility Requirements**: Must be an owner of the solar system and the installation must be completed by December31,2025.",
+              "line": 8
+            },
+            {
+              "text": "**Estimated Value**: $9,450 (30% of $31,500 installation cost for a10.5 kW system assuming $3.00/W).",
+              "line": 9
+            },
+            {
+              "text": "**Application URL**: [IRS Solar ITC Information](https://www.irs.gov/credits-deductions/individuals/solar-investment-tax-credit)",
+              "line": 10
+            },
+            {
+              "text": "**Expiration Date**: December31,2025### **2. State Incentives**",
+              "line": 11
+            },
+            {
+              "text": "**Type**: State- **Description**: Offers cash rebates to residential customers who install solar photovoltaic systems.",
+              "line": 13
+            },
+            {
+              "text": "**Eligibility Requirements**: The property must be a residential installation, and applications are subject to funding availability.",
+              "line": 14
+            },
+            {
+              "text": "**Estimated Value**: $1,500 (average rebate for a system of this size).",
+              "line": 15
+            },
+            {
+              "text": "**Application URL**: [California Solar Initiative](https://www.californiasolarinitiative.org/)",
+              "line": 16
+            },
+            {
+              "text": "**Expiration Date**: Varies by program and funding.",
+              "line": 17
+            },
+            {
+              "text": "**Type**: Local- **Description**: Provides cash rebates for San Francisco homeowners who go solar.",
+              "line": 21
+            },
+            {
+              "text": "**Eligibility Requirements**: Must be a resident of San Francisco and meet specific income guidelines, as funding is limited.",
+              "line": 22
+            },
+            {
+              "text": "**Estimated Value**: Up to $5,000 based on income eligibility.",
+              "line": 23
+            },
+            {
+              "text": "**Application URL**: [GoSolarSF](https://www.sfgov.org/sfenvironment/our-programs/renewable-energy)",
+              "line": 24
+            },
+            {
+              "text": "**Expiration Date**: While the specific expiration is not listed, funding may be limited.",
+              "line": 25
+            },
+            {
+              "text": "**Type**: Utility- **Description**: Customers receive credit for excess energy produced by their solar systems that is sent back to the grid.",
+              "line": 29
+            },
+            {
+              "text": "**Eligibility Requirements**: Must be a PG&E customer with a grid-tied solar installation.",
+              "line": 30
+            },
+            {
+              "text": "**Estimated Value**: Variable based on energy produced, typically valued at retail rates.",
+              "line": 31
+            },
+            {
+              "text": "**Application URL**: [PG&E NEM Information](https://www.pge.com/en_US/small_business/solar_and_wind/net_energy_metering.page)",
+              "line": 32
+            },
+            {
+              "text": "**Expiration Date**: Ongoing; dependent on individual agreements.",
+              "line": 33
+            },
+            {
+              "text": "**Total Savings from Incentives**: - Federal ITC: $9,450 - California Solar Initiative: $1,500 - GoSolarSF: Up to $5,000 - **Total Estimated Savings**: **$15,950** (assuming maximum GoSolarSF rebate).",
+              "line": 45
+            },
+            {
+              "text": "Installation Cost for10.5 kW system: - \\(10,500 \\text{ Watts} \\times \\$3.00/\\text{Watt} = \\$31,500 \\)",
+              "line": 48
+            },
+            {
+              "text": "**Loan Amount Post-Incentives**: - \\( \\$31,500 - \\$15,950 = \\$15,550 \\)",
+              "line": 51
+            },
+            {
+              "text": "**Estimated Annual Energy Savings** (based on $0.20/kWh):",
+              "line": 52
+            },
+            {
+              "text": "Annual Generation:14,500 kWh - Annual Savings: \\(14,500 \\text{ kWh} \\times0.20 \\text{ USD/kWh} = \\$2,900 \\)",
+              "line": 54
+            },
+            {
+              "text": "**Payback Period**:",
+              "line": 55
+            },
+            {
+              "text": "Payback Period = \\( \\frac{\\$15,550}{\\$2,900} \\approx5.36 \\text{ years} \\)",
+              "line": 57
+            }
+          ],
+          "links": [
+            {
+              "text": "IRS Solar ITC Information",
+              "url": "https://www.irs.gov/credits-deductions/individuals/solar-investment-tax-credit"
+            },
+            {
+              "text": "California Solar Initiative",
+              "url": "https://www.californiasolarinitiative.org/"
+            },
+            {
+              "text": "GoSolarSF",
+              "url": "https://www.sfgov.org/sfenvironment/our-programs/renewable-energy"
+            },
+            {
+              "text": "PG&E NEM Information",
+              "url": "https://www.pge.com/en_US/small_business/solar_and_wind/net_energy_metering.page"
+            },
+            {
+              "text": "IRS ITC Info",
+              "url": "https://www.irs.gov/credits-deductions/individuals/solar-investment-tax-credit"
+            },
+            {
+              "text": "CSI",
+              "url": "https://www.californiasolarinitiative.org/"
+            },
+            {
+              "text": "GoSolarSF",
+              "url": "https://www.sfgov.org/sfenvironment/our-programs/renewable-energy"
+            },
+            {
+              "text": "PG&E NEM",
+              "url": "https://www.pge.com/en_US/small_business/solar_and_wind/net_energy_metering.page"
+            }
+          ],
+          "boldText": [
+            "Solar Incentives Overview",
+            "1. Federal Incentives",
+            "Investment Tax Credit (ITC)",
+            "Type",
+            "Description",
+            "Eligibility Requirements",
+            "Estimated Value",
+            "Application URL",
+            "Expiration Date",
+            "2. State Incentives",
+            "California Solar Initiative (CSI)",
+            "Type",
+            "Description",
+            "Eligibility Requirements",
+            "Estimated Value",
+            "Application URL",
+            "Expiration Date",
+            "3. Local/Municipal Programs",
+            "GoSolarSF Program",
+            "Type",
+            "Description",
+            "Eligibility Requirements",
+            "Estimated Value",
+            "Application URL",
+            "Expiration Date",
+            "4. Utility Programs",
+            "Net Energy Metering (NEM)",
+            "Type",
+            "Description",
+            "Eligibility Requirements",
+            "Estimated Value",
+            "Application URL",
+            "Expiration Date",
+            "Summary of Available Incentives",
+            "Total Estimated Savings Calculation",
+            "Total Savings from Incentives",
+            "Total Estimated Savings",
+            "$15,950",
+            "Installation Cost",
+            "Payback Period Calculation",
+            "Loan Amount Post-Incentives",
+            "Estimated Annual Energy Savings",
+            "Payback Period"
+          ],
+          "italicText": [
+            "Solar Incentives Overview",
+            "\n\n### ",
+            "1. Federal Incentives",
+            "\n#### ",
+            "Investment Tax Credit (ITC)",
+            "\n- ",
+            "Type",
+            ": Federal- ",
+            "Description",
+            ": Allows homeowners to deduct30% of the cost of installing a solar energy system from federal taxes.\n- ",
+            "Eligibility Requirements",
+            ": Must be an owner of the solar system and the installation must be completed by December31,2025.\n- ",
+            "Estimated Value",
+            ": $9,450 (30% of $31,500 installation cost for a10.5 kW system assuming $3.00/W).\n- ",
+            "Application URL",
+            ": [IRS Solar ITC Information](https://www.irs.gov/credits-deductions/individuals/solar-investment-tax-credit)\n- ",
+            "Expiration Date",
+            ": December31,2025### ",
+            "2. State Incentives",
+            "\n#### ",
+            "California Solar Initiative (CSI)",
+            "\n- ",
+            "Type",
+            ": State- ",
+            "Description",
+            ": Offers cash rebates to residential customers who install solar photovoltaic systems.\n- ",
+            "Eligibility Requirements",
+            ": The property must be a residential installation, and applications are subject to funding availability.\n- ",
+            "Estimated Value",
+            ": $1,500 (average rebate for a system of this size).\n- ",
+            "Application URL",
+            ": [California Solar Initiative](https://www.californiasolarinitiative.org/)\n- ",
+            "Expiration Date",
+            ": Varies by program and funding.\n\n### ",
+            "3. Local/Municipal Programs",
+            "\n#### ",
+            "GoSolarSF Program",
+            "\n- ",
+            "Type",
+            ": Local- ",
+            "Description",
+            ": Provides cash rebates for San Francisco homeowners who go solar.\n- ",
+            "Eligibility Requirements",
+            ": Must be a resident of San Francisco and meet specific income guidelines, as funding is limited.\n- ",
+            "Estimated Value",
+            ": Up to $5,000 based on income eligibility.\n- ",
+            "Application URL",
+            ": [GoSolarSF](https://www.sfgov.org/sfenvironment/our-programs/renewable-energy)\n- ",
+            "Expiration Date",
+            ": While the specific expiration is not listed, funding may be limited.\n\n### ",
+            "4. Utility Programs",
+            "\n#### ",
+            "Net Energy Metering (NEM)",
+            "\n- ",
+            "Type",
+            ": Utility- ",
+            "Description",
+            ": Customers receive credit for excess energy produced by their solar systems that is sent back to the grid.\n- ",
+            "Eligibility Requirements",
+            ": Must be a PG&E customer with a grid-tied solar installation.\n- ",
+            "Estimated Value",
+            ": Variable based on energy produced, typically valued at retail rates.\n- ",
+            "Application URL",
+            ": [PG&E NEM Information](https://www.pge.com/en_US/small_business/solar_and_wind/net_energy_metering.page)\n- ",
+            "Expiration Date",
+            ": Ongoing; dependent on individual agreements.\n\n### ",
+            "Summary of Available Incentives",
+            "\n\n| Name | Type | Description | Estimated Value | Eligibility Requirements | Application URL | Expiration Date |\n|--------------------------|-----------|-------------------------------------------------------------------|-----------------|-------------------------------------------------|-------------------------------------------------------------------------------------------|------------------------------|\n| Investment Tax Credit | Federal |30% of installation cost deductible | $9,450 | Homeowner, installation by12/31/2025 | [IRS ITC Info](https://www.irs.gov/credits-deductions/individuals/solar-investment-tax-credit) |12/31/2025 |\n| California Solar Initiative| State | Cash rebate for solar installations | $1,500 | Residential customers, subject to funding | [CSI](https://www.californiasolarinitiative.org/) | Varies |\n| GoSolarSF Program | Local | Cash rebates for solar installations in SF | Up to $5,000 | San Francisco residents, income guidelines | [GoSolarSF](https://www.sfgov.org/sfenvironment/our-programs/renewable-energy) | Limited funding |\n| Net Energy Metering | Utility | Credits for electricity sent back to the grid | Variable | PG&E customers with grid-tied solar installations| [PG&E NEM](https://www.pge.com/en_US/small_business/solar_and_wind/net_energy_metering.page) | Ongoing |\n\n### ",
+            "Total Estimated Savings Calculation",
+            "\n- ",
+            "Total Savings from Incentives",
+            ": - Federal ITC: $9,450 - California Solar Initiative: $1,500 - GoSolarSF: Up to $5,000 - ",
+            "Total Estimated Savings",
+            ": ",
+            "$15,950",
+            " (assuming maximum GoSolarSF rebate).\n\n### ",
+            "Installation Cost",
+            "\n- Installation Cost for10.5 kW system: - \\(10,500 \\text{ Watts} \\times \\$3.00/\\text{Watt} = \\$31,500 \\)\n\n### ",
+            "Payback Period Calculation",
+            "\n- ",
+            "Loan Amount Post-Incentives",
+            ": - \\( \\$31,500 - \\$15,950 = \\$15,550 \\)\n\n- ",
+            "Estimated Annual Energy Savings",
+            " (based on $0.20/kWh):\n - Annual Generation:14,500 kWh - Annual Savings: \\(14,500 \\text{ kWh} \\times0.20 \\text{ USD/kWh} = \\$2,900 \\)\n\n- ",
+            "Payback Period"
+          ],
+          "codeBlocks": [],
+          "inlineCode": [],
+          "lineBreaks": {
+            "windowsStyle": 0,
+            "unixStyle": 60,
+            "singleNewlines": 34,
+            "doubleNewlines": 13
+          },
+          "specialChars": {
+            "tabs": 0,
+            "carriageReturns": 0,
+            "nullBytes": 0
+          }
+        }
+      },
+      "contentPreview": "Here is a comprehensive overview of solar incentives, rebates, and tax credits available for a property located at123 Market Street, San Francisco, CA94102:\n\n## **Solar Incentives Overview**\n\n### **1. Federal Incentives**\n#### **Investment Tax Credit (ITC)**\n- **Type**: Federal- **Description**: Allows homeowners to deduct30% of the cost of installing a solar energy system from federal taxes.\n- **Eligibility Requirements**: Must be an owner of the solar system and the installation must be comple"
+    }
+  }
+}
