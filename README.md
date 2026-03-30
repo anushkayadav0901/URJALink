@@ -61,6 +61,12 @@ uv sync # Sets up the .venv and installs the deps
 uvicorn main:app --reload
 ```
 
+### For Docker
+
+```bash
+docker compose --profile all up --build
+```
+
 ## Configuration
 
 Create a `.env` file (see `core/config.py`) and set at least:
