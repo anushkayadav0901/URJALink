@@ -4,7 +4,9 @@ import importlib.util
 import pytest
 
 if importlib.util.find_spec("fastapi") is None:
-    pytest.skip("fastapi is required for analyze endpoint tests.", allow_module_level=True)
+    pytest.skip(
+        "fastapi is required for analyze endpoint tests.", allow_module_level=True
+    )
 
 from fastapi.testclient import TestClient
 
@@ -64,7 +66,7 @@ def test_analyze_returns_financial_outlook(mock_econ, mock_nasa, mock_roof):
         dust_cleanings_per_year=2,
         dust_cleaning_cost_per_kw=15.0,
     )
-    
+
     payload = {
         "latitude": 37.77,
         "longitude": -122.41,
@@ -87,7 +89,7 @@ def test_analyze_handles_economic_data_failure(mock_econ, mock_nasa, mock_roof):
     mock_roof.return_value = _sample_roof()
     mock_nasa.return_value = _sample_nasa()
     mock_econ.side_effect = EconomicDataError("missing provider config")
-    
+
     payload = {
         "latitude": 40.0,
         "longitude": -105.0,

@@ -1,4 +1,5 @@
 """Central repository for deterministic solar modeling constants."""
+
 from __future__ import annotations
 
 from typing import Dict
@@ -21,8 +22,8 @@ USER_POLYGON_CONFIDENCE: float = 0.95
 DAYS_PER_YEAR: int = 365
 SYSTEM_EFFICIENCY_BASE: float = 0.75
 SOILING_LOSS_FRACTION: float = 0.03  # 3% annual energy loss from dust
-SOILING_TREE_ADDER: float = 0.01     # extra dust loss when trees are nearby
-SOILING_MAX_LOSS: float = 0.08       # keep the combined loss bounded
+SOILING_TREE_ADDER: float = 0.01  # extra dust loss when trees are nearby
+SOILING_MAX_LOSS: float = 0.08  # keep the combined loss bounded
 BASE_SHADING_PERCENT: float = 5.0
 MAX_SHADING_PERCENT: float = 22.0
 CHIMNEY_SHADING_PERCENT: float = 2.0
@@ -49,7 +50,9 @@ SCORE_REFERENCE_CAPACITY_FACTOR: float = 0.20
 # Environmental impact ----------------------------------------------------------
 TYPICAL_HOME_CONSUMPTION_KWH: float = 10500.0
 CO2_PER_KWH_METRIC_TONS: float = 0.0004  # US EPA eGRID 2022 avg (~0.88 lb CO₂ / kWh)
-TREES_PER_METRIC_TON: float = 16.5  # EPA greenhouse-gas equivalency (tree seedlings grown 10 yrs)
+TREES_PER_METRIC_TON: float = (
+    16.5  # EPA greenhouse-gas equivalency (tree seedlings grown 10 yrs)
+)
 
 FEDERAL_ITC_RATE: float = 0.30
 PANEL_DEGRADATION_RATE: float = 0.005

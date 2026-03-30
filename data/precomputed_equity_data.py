@@ -26,7 +26,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 3.8,
         "solar_installations": 22,
         "total_households": 520,
-        "barriers": []
+        "barriers": [],
     },
     {
         "block_group_id": "340210001002",
@@ -38,9 +38,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 4.2,
         "solar_installations": 18,
         "total_households": 480,
-        "barriers": []
+        "barriers": [],
     },
-    
     # Moderate Equity - Princeton Junction (mixed income)
     {
         "block_group_id": "340210002001",
@@ -52,9 +51,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 5.9,
         "solar_installations": 8,
         "total_households": 380,
-        "barriers": [
-            "42% renters (no ownership rights)"
-        ]
+        "barriers": ["42% renters (no ownership rights)"],
     },
     {
         "block_group_id": "340210002002",
@@ -66,9 +63,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 5.4,
         "solar_installations": 11,
         "total_households": 420,
-        "barriers": []
+        "barriers": [],
     },
-    
     # SOLAR DESERT - Near Route 1 (low income, high renters)
     {
         "block_group_id": "340210003001",
@@ -84,8 +80,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
             "$32,000 median income (below solar loan threshold)",
             "78% renters (no ownership rights)",
             "9.8% energy burden (need relief but lack access)",
-            "0 existing solar installations (no proven programs)"
-        ]
+            "0 existing solar installations (no proven programs)",
+        ],
     },
     {
         "block_group_id": "340210003002",
@@ -100,10 +96,9 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "barriers": [
             "$38,000 median income (below solar loan threshold)",
             "71% renters (no ownership rights)",
-            "8.5% energy burden (need relief but lack access)"
-        ]
+            "8.5% energy burden (need relief but lack access)",
+        ],
     },
-    
     # University Area - High renters but variable income
     {
         "block_group_id": "340210004001",
@@ -117,10 +112,9 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "total_households": 680,
         "barriers": [
             "$28,000 median income (below solar loan threshold)",
-            "92% renters (no ownership rights)"
-        ]
+            "92% renters (no ownership rights)",
+        ],
     },
-    
     # Hopewell - Rural, moderate income
     {
         "block_group_id": "340210005001",
@@ -132,9 +126,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 5.1,
         "solar_installations": 14,
         "total_households": 310,
-        "barriers": []
+        "barriers": [],
     },
-    
     # Additional areas for better coverage
     {
         "block_group_id": "340210001003",
@@ -146,7 +139,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 3.2,
         "solar_installations": 28,
         "total_households": 445,
-        "barriers": []
+        "barriers": [],
     },
     {
         "block_group_id": "340210002003",
@@ -160,8 +153,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "total_households": 356,
         "barriers": [
             "48% renters (no ownership rights)",
-            "6.8% energy burden (need relief but lack access)"
-        ]
+            "6.8% energy burden (need relief but lack access)",
+        ],
     },
     {
         "block_group_id": "340210003003",
@@ -176,8 +169,8 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "barriers": [
             "$35,000 median income (below solar loan threshold)",
             "68% renters (no ownership rights)",
-            "8.9% energy burden (need relief but lack access)"
-        ]
+            "8.9% energy burden (need relief but lack access)",
+        ],
     },
     {
         "block_group_id": "340210004002",
@@ -189,9 +182,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 5.8,
         "solar_installations": 9,
         "total_households": 412,
-        "barriers": [
-            "55% renters (no ownership rights)"
-        ]
+        "barriers": ["55% renters (no ownership rights)"],
     },
     {
         "block_group_id": "340210005002",
@@ -203,7 +194,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 4.6,
         "solar_installations": 19,
         "total_households": 389,
-        "barriers": []
+        "barriers": [],
     },
     # Additional moderate and high equity areas
     {
@@ -216,7 +207,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 3.9,
         "solar_installations": 24,
         "total_households": 467,
-        "barriers": []
+        "barriers": [],
     },
     {
         "block_group_id": "340210002004",
@@ -228,7 +219,7 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "energy_burden": 5.7,
         "solar_installations": 12,
         "total_households": 398,
-        "barriers": []
+        "barriers": [],
     },
     {
         "block_group_id": "340210003004",
@@ -243,19 +234,19 @@ PRINCETON_EQUITY_DATA: List[Dict] = [
         "barriers": [
             "$31,000 median income (below solar loan threshold)",
             "74% renters (no ownership rights)",
-            "9.4% energy burden (need relief but lack access)"
-        ]
-    }
+            "9.4% energy burden (need relief but lack access)",
+        ],
+    },
 ]
 
 
 def get_equity_data(zip_code: str = "08540") -> List[Dict]:
     """
     Get equity data for specified zip code.
-    
+
     Args:
         zip_code: Target zip code (only Princeton area supported in demo)
-        
+
     Returns:
         List of block group equity data dictionaries
     """
@@ -266,36 +257,33 @@ def get_equity_data(zip_code: str = "08540") -> List[Dict]:
 def get_solar_deserts(threshold: float = 35.0) -> List[Dict]:
     """
     Get block groups with equity scores below threshold.
-    
+
     Args:
         threshold: Equity score cutoff (default: 35 = solar desert)
-        
+
     Returns:
         Filtered list of low-equity block groups
     """
-    return [
-        bg for bg in PRINCETON_EQUITY_DATA 
-        if bg["equity_score"] < threshold
-    ]
+    return [bg for bg in PRINCETON_EQUITY_DATA if bg["equity_score"] < threshold]
 
 
 def get_block_group_by_location(lat: float, lng: float) -> Dict:
     """
     Find nearest block group to given coordinates.
-    
+
     Args:
         lat: Latitude
         lng: Longitude
-        
+
     Returns:
         Nearest block group's equity data
     """
+
     def distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
         """Calculate Haversine distance between two points."""
-        return math.sqrt((lat1 - lat2)**2 + (lng1 - lng2)**2)
-    
+        return math.sqrt((lat1 - lat2) ** 2 + (lng1 - lng2) ** 2)
+
     nearest = min(
-        PRINCETON_EQUITY_DATA,
-        key=lambda bg: distance(lat, lng, bg["lat"], bg["lng"])
+        PRINCETON_EQUITY_DATA, key=lambda bg: distance(lat, lng, bg["lat"], bg["lng"])
     )
     return nearest

@@ -4,7 +4,10 @@ from unittest.mock import AsyncMock
 import pytest
 
 if importlib.util.find_spec("pydantic_settings") is None:
-    pytest.skip("pydantic_settings is required for economic data tests.", allow_module_level=True)
+    pytest.skip(
+        "pydantic_settings is required for economic data tests.",
+        allow_module_level=True,
+    )
 
 from core.config import settings
 from data_access import economic_data
@@ -20,16 +23,19 @@ async def test_fetch_economic_inputs_parses_payload(monkeypatch):
         "_fetch_electricity_rate_usd_per_kwh",
         mock_rate,
     )
-    
+
     result = await economic_data.fetch_economic_inputs(
         latitude=37.77,
         longitude=-122.41,
         state="CA",
     )
-    
+
     assert result.electricity_rate_usd_per_kwh == 0.23
     assert result.install_cost_per_watt == economic_data.INSTALL_COST_TABLE["CA"]
-    assert result.dust_cleanings_per_year == economic_data.STATE_MAINTENANCE_PROFILE["CA"]["cleanings"]
+    assert (
+        result.dust_cleanings_per_year
+        == economic_data.STATE_MAINTENANCE_PROFILE["CA"]["cleanings"]
+    )
 
 
 @pytest.mark.asyncio

@@ -8,7 +8,7 @@ import os
 app = FastAPI(
     title="Solar Analysis API",
     description="Calculate solar potential for any location",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # CORS for frontend
@@ -27,6 +27,7 @@ if os.path.exists(static_dir):
 
 app.include_router(router)
 
+
 @app.get("/")
 def read_root():
     """Serve the frontend HTML"""
@@ -34,6 +35,7 @@ def read_root():
     if os.path.exists(static_file):
         return FileResponse(static_file)
     return {"message": "Solar Analysis API", "status": "online"}
+
 
 if __name__ == "__main__":
     import uvicorn

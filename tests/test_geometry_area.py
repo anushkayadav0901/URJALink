@@ -1,4 +1,5 @@
 """Regression tests for geodesic roof area calculations."""
+
 from __future__ import annotations
 
 import math
@@ -28,8 +29,12 @@ def test_equatorial_square_matches_haversine_product() -> None:
 
     calculated_sqft = calculate_polygon_area_sqft(coords)
 
-    north_south_ft = haversine_distance_ft(coords[0][0], coords[0][1], coords[2][0], coords[0][1])
-    east_west_ft = haversine_distance_ft(coords[0][0], coords[0][1], coords[0][0], coords[1][1])
+    north_south_ft = haversine_distance_ft(
+        coords[0][0], coords[0][1], coords[2][0], coords[0][1]
+    )
+    east_west_ft = haversine_distance_ft(
+        coords[0][0], coords[0][1], coords[0][0], coords[1][1]
+    )
     expected_sqft = _feet_to_sqft(north_south_ft, east_west_ft)
 
     assert calculated_sqft == pytest.approx(expected_sqft, rel=0.02)

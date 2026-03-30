@@ -1,4 +1,5 @@
 """Assemble live economic inputs using free public data sources."""
+
 from __future__ import annotations
 
 import json
@@ -11,7 +12,9 @@ from core.config import settings
 from models.economics import EconomicInputs
 
 EIA_ENDPOINT = "https://api.eia.gov/v2/electricity/retail-sales/data/"
-INSTALL_COST_PATH = Path(__file__).resolve().parents[1] / "data" / "install_costs_2024.json"
+INSTALL_COST_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "install_costs_2024.json"
+)
 
 
 class EconomicDataError(RuntimeError):
@@ -32,7 +35,7 @@ async def _fetch_electricity_rate_usd_per_kwh(state: str) -> float:
         raise EconomicDataError(
             "EIA_API_KEY is not configured. Request a free key from https://www.eia.gov/opendata/."
         )
-    
+
     params = {
         "frequency": "monthly",
         "data[0]": "price",
@@ -44,15 +47,15 @@ async def _fetch_electricity_rate_usd_per_kwh(state: str) -> float:
         "length": 1,
         "api_key": settings.EIA_API_KEY,
     }
-    
+
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get(EIA_ENDPOINT, params=params)
-    
+
     if response.status_code != 200:
         raise EconomicDataError(
             f"EIA API error ({response.status_code}): {response.text}"
         )
-    
+
     body = response.json()
     try:
         data = body["response"]["data"]
@@ -63,7 +66,7 @@ async def _fetch_electricity_rate_usd_per_kwh(state: str) -> float:
         raise EconomicDataError(
             f"Unable to parse EIA payload for state {state}: {body}"
         ) from exc
-    
+
     return round(cents_per_kwh / 100.0, 4)
 
 
@@ -90,7 +93,11 @@ STATE_MAINTENANCE_PROFILE: Dict[str, Dict[str, float]] = {
     "NY": {"maintenance_rate": 0.013, "cleanings": 2, "cleaning_cost_per_kw": 14.5},
     "TX": {"maintenance_rate": 0.011, "cleanings": 3, "cleaning_cost_per_kw": 15.5},
     "WA": {"maintenance_rate": 0.013, "cleanings": 1, "cleaning_cost_per_kw": 12.0},
-    "DEFAULT": {"maintenance_rate": 0.012, "cleanings": 2, "cleaning_cost_per_kw": 14.0},
+    "DEFAULT": {
+        "maintenance_rate": 0.012,
+        "cleanings": 2,
+        "cleaning_cost_per_kw": 14.0,
+    },
 }
 
 
@@ -111,11 +118,11 @@ async def fetch_economic_inputs(
     """Fetch electricity rate, install costs, and maintenance assumptions."""
     _ = latitude, longitude, zip_code  # currently unused but kept for signature parity
     state_code = _ensure_state(state)
-    
+
     electricity_rate = await _fetch_electricity_rate_usd_per_kwh(state_code)
     install_cost = _resolve_install_cost(state_code)
     profile = _resolve_maintenance_profile(state_code)
-    
+
     return EconomicInputs(
         electricity_rate_usd_per_kwh=electricity_rate,
         install_cost_per_watt=install_cost,

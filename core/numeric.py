@@ -1,4 +1,5 @@
 """Numeric helpers to keep rounding deterministic across modules."""
+
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP

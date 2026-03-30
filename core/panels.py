@@ -1,4 +1,5 @@
 """Helpers for converting roof area into panel counts."""
+
 from __future__ import annotations
 
 from math import exp
@@ -13,7 +14,7 @@ from core.constants import (
 def _coverage_ratio(usable_area_sqft: float) -> float:
     """
     Estimate what share of the roof can host panels.
-    
+
     Fire-code walkways, ridge setbacks, and row spacing mean small roofs have
     disproportionately large unusable margins. A saturating exponential lets the
     coverage fraction grow with area while capping at a realistic maximum for

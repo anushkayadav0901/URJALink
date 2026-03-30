@@ -1,6 +1,11 @@
 import pytest
 
-from business_logic import financial_analysis, roof_analysis, solar_calculations, solar_data
+from business_logic import (
+    financial_analysis,
+    roof_analysis,
+    solar_calculations,
+    solar_data,
+)
 from models.economics import EconomicInputs
 
 
@@ -25,7 +30,7 @@ async def test_nasa_cache_prevents_duplicate_fetches(monkeypatch):
     """get_nasa_data_cached should reuse cached payload for rounded lat/lng."""
     solar_data._NASA_CACHE.clear()
     calls = {"count": 0}
-    
+
     async def fake_fetch(lat: float, lng: float) -> dict:
         calls["count"] += 1
         return {
@@ -43,12 +48,12 @@ async def test_nasa_cache_prevents_duplicate_fetches(monkeypatch):
                 }
             }
         }
-    
+
     monkeypatch.setattr(solar_data, "get_nasa_solar_data", fake_fetch)
-    
+
     first = await solar_data.get_nasa_data_cached(12.34567, -98.76543)
     second = await solar_data.get_nasa_data_cached(12.34561, -98.76549)
-    
+
     assert first == second
     assert calls["count"] == 1
 
@@ -57,12 +62,26 @@ def test_solar_potential_accounts_for_soiling():
     """Trees nearby should reduce annual production via the dust factor."""
     solar_input = {"peak_sun_hours_daily": 5.5}
     roof = _basic_roof()
-    clean_obstacles = {"chimneys": 0, "skylights": 0, "trees_nearby": False, "hvac_units": 0}
-    dusty_obstacles = {"chimneys": 0, "skylights": 0, "trees_nearby": True, "hvac_units": 0}
-    
-    clean = solar_calculations.calculate_solar_potential(roof, solar_input, clean_obstacles)
-    dusty = solar_calculations.calculate_solar_potential(roof, solar_input, dusty_obstacles)
-    
+    clean_obstacles = {
+        "chimneys": 0,
+        "skylights": 0,
+        "trees_nearby": False,
+        "hvac_units": 0,
+    }
+    dusty_obstacles = {
+        "chimneys": 0,
+        "skylights": 0,
+        "trees_nearby": True,
+        "hvac_units": 0,
+    }
+
+    clean = solar_calculations.calculate_solar_potential(
+        roof, solar_input, clean_obstacles
+    )
+    dusty = solar_calculations.calculate_solar_potential(
+        roof, solar_input, dusty_obstacles
+    )
+
     assert dusty["annual_generation_kwh"] < clean["annual_generation_kwh"]
     assert dusty["equivalent_trees_planted"] < clean["equivalent_trees_planted"]
 
@@ -71,16 +90,24 @@ def test_solar_score_penalizes_orientation():
     """Non-south orientations should score lower with identical inputs."""
     solar_input = {"peak_sun_hours_daily": 5.5}
     obstacles = {"chimneys": 0, "skylights": 0, "trees_nearby": False, "hvac_units": 0}
-    
+
     south = _basic_roof(orientation="south")
     west = _basic_roof(orientation="west")
-    
-    potential_south = solar_calculations.calculate_solar_potential(south, solar_input, obstacles)
-    potential_west = solar_calculations.calculate_solar_potential(west, solar_input, obstacles)
-    
-    score_south = solar_calculations.calculate_solar_score(south, solar_input, potential_south, obstacles)
-    score_west = solar_calculations.calculate_solar_score(west, solar_input, potential_west, obstacles)
-    
+
+    potential_south = solar_calculations.calculate_solar_potential(
+        south, solar_input, obstacles
+    )
+    potential_west = solar_calculations.calculate_solar_potential(
+        west, solar_input, obstacles
+    )
+
+    score_south = solar_calculations.calculate_solar_score(
+        south, solar_input, potential_south, obstacles
+    )
+    score_west = solar_calculations.calculate_solar_score(
+        west, solar_input, potential_west, obstacles
+    )
+
     assert score_west < score_south
 
 
@@ -98,10 +125,15 @@ def test_financials_expose_dust_costs():
         annual_generation_kwh=15000,
         economic_inputs=inputs,
     )
-    
-    expected_dust = 8.0 * inputs.dust_cleaning_cost_per_kw * inputs.dust_cleanings_per_year
+
+    expected_dust = (
+        8.0 * inputs.dust_cleaning_cost_per_kw * inputs.dust_cleanings_per_year
+    )
     assert result["dust_mitigation_cost_annual"] == pytest.approx(expected_dust)
-    assert result["total_dust_mitigation_costs_25_years"] == pytest.approx(expected_dust * 25)
+    assert result["total_dust_mitigation_costs_25_years"] == pytest.approx(
+        expected_dust * 25
+    )
     assert result["total_operational_costs_25_years"] == (
-        result["total_maintenance_costs_25_years"] + result["total_dust_mitigation_costs_25_years"]
+        result["total_maintenance_costs_25_years"]
+        + result["total_dust_mitigation_costs_25_years"]
     )

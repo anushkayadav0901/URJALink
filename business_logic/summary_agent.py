@@ -1,6 +1,7 @@
 """
 Gemini-powered narrative summary generator for solar analyses.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,12 +26,12 @@ def _build_prompt(payload: SummaryRequest) -> str:
         "solar_potential": payload.solar_potential.model_dump(),
         "financial_outlook": payload.financial_outlook.model_dump(),
     }
-    
+
     if payload.additional_context:
         metrics["additional_context"] = payload.additional_context
-    
+
     metrics_blob = json.dumps(metrics, indent=2)
-    
+
     return (
         "Generate a solar analysis summary from the metrics below. Output ONLY the summary content.\n"
         "No greetings, no closings, no introductory phrases. Start directly with the content.\n\n"
@@ -46,48 +47,41 @@ def _build_prompt(payload: SummaryRequest) -> str:
 
 
 async def generate_metrics_summary(
-    payload: SummaryRequest,
-    *,
-    http_client: Optional[httpx.AsyncClient] = None
+    payload: SummaryRequest, *, http_client: Optional[httpx.AsyncClient] = None
 ) -> Dict[str, str]:
     """
     Call Gemini to translate solar metrics into a narrative summary.
-    
+
     Args:
         payload: Validated summary request containing structured metrics.
         http_client: Optional injected HTTP client (used for testing).
-        
+
     Returns:
         Dict with Markdown summary text and model metadata.
     """
     api_key = settings.GEMINI_API_KEY
     if not api_key:
         raise ValueError("GEMINI_API_KEY is not configured.")
-    
+
     prompt = _build_prompt(payload)
     request_body = {
         "contents": [
             {
                 "role": "user",
-                "parts": [
-                    {"text": prompt}
-                ],
+                "parts": [{"text": prompt}],
             }
         ]
     }
-    
+
     close_client = False
     client = http_client
     if client is None:
         client = httpx.AsyncClient(timeout=30.0)
         close_client = True
-    
+
     try:
         response = await client.post(
-            GEMINI_ENDPOINT,
-            params={"key": api_key},
-            json=request_body,
-            timeout=30.0
+            GEMINI_ENDPOINT, params={"key": api_key}, json=request_body, timeout=30.0
         )
         response.raise_for_status()
     except httpx.HTTPStatusError as http_err:
@@ -100,23 +94,21 @@ async def generate_metrics_summary(
     finally:
         if close_client:
             await client.aclose()
-    
+
     data = response.json()
     candidates = data.get("candidates") or []
     if not candidates:
         raise RuntimeError("Gemini API returned no candidates.")
-    
+
     parts = candidates[0].get("content", {}).get("parts") or []
     text_chunks = [part.get("text", "") for part in parts if part.get("text")]
     summary_text = "".join(text_chunks).strip()
-    
+
     if not summary_text:
         raise RuntimeError("Gemini response did not include any text.")
-    
-    model_name = candidates[0].get("model") or data.get(
-        "model", GEMINI_MODEL
-    )
-    
+
+    model_name = candidates[0].get("model") or data.get("model", GEMINI_MODEL)
+
     return {
         "summary_markdown": summary_text,
         "model_name": model_name or GEMINI_MODEL,
