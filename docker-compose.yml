@@ -1,0 +1,12 @@
+services:
+    urjalink-backend:
+        extends:
+            file: ./docker-compose.backend.yml
+            service: urjalink-backend
+        profiles:
+            - all
+            - backend
+
+networks:
+    urjalink-net:
+        driver: bridge

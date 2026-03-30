@@ -7,7 +7,7 @@ import io
 import numpy as np
 import cv2
 from PIL import Image
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
 import torch
 
