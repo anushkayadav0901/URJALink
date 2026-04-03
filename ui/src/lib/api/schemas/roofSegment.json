@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "segment_id": { "type": "integer", "title": "Segment Id" },
+    "area_sqft": { "type": "number", "title": "Area Sqft" },
+    "orientation_degrees": {
+      "type": "integer",
+      "title": "Orientation Degrees"
+    },
+    "orientation_cardinal": {
+      "type": "string",
+      "title": "Orientation Cardinal"
+    },
+    "tilt_degrees": { "type": "number", "title": "Tilt Degrees" },
+    "panel_capacity": { "type": "integer", "title": "Panel Capacity" },
+    "polygon": {
+      "anyOf": [
+        {
+          "properties": {
+            "coordinates": {
+              "items": { "items": { "type": "number" }, "type": "array" },
+              "type": "array",
+              "title": "Coordinates"
+            },
+            "area_sqft": { "type": "number", "title": "Area Sqft" },
+            "confidence": { "type": "number", "title": "Confidence" }
+          },
+          "type": "object",
+          "required": ["coordinates", "area_sqft", "confidence"],
+          "title": "RoofPolygon",
+          "description": "Roof polygon coordinates for frontend Google Maps overlay",
+          "x-readme-ref-name": "RoofPolygon"
+        },
+        { "type": "null" }
+      ]
+    }
+  },
+  "type": "object",
+  "required": [
+    "segment_id",
+    "area_sqft",
+    "orientation_degrees",
+    "orientation_cardinal",
+    "tilt_degrees",
+    "panel_capacity"
+  ],
+  "title": "RoofSegment",
+  "x-readme-ref-name": "RoofSegment"
+}

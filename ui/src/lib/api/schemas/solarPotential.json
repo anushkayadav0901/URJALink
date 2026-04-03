@@ -1,0 +1,43 @@
+{
+  "properties": {
+    "system_size_kw": { "type": "number", "title": "System Size Kw" },
+    "annual_generation_kwh": {
+      "type": "integer",
+      "title": "Annual Generation Kwh"
+    },
+    "daily_generation_kwh": {
+      "type": "number",
+      "title": "Daily Generation Kwh"
+    },
+    "capacity_factor": { "type": "number", "title": "Capacity Factor" },
+    "energy_offset_percent": {
+      "type": "integer",
+      "title": "Energy Offset Percent"
+    },
+    "co2_offset_tons_yearly": {
+      "type": "number",
+      "title": "Co2 Offset Tons Yearly"
+    },
+    "co2_offset_tons_25year": {
+      "type": "integer",
+      "title": "Co2 Offset Tons 25Year"
+    },
+    "equivalent_trees_planted": {
+      "type": "integer",
+      "title": "Equivalent Trees Planted"
+    }
+  },
+  "type": "object",
+  "required": [
+    "system_size_kw",
+    "annual_generation_kwh",
+    "daily_generation_kwh",
+    "capacity_factor",
+    "energy_offset_percent",
+    "co2_offset_tons_yearly",
+    "co2_offset_tons_25year",
+    "equivalent_trees_planted"
+  ],
+  "title": "SolarPotential",
+  "x-readme-ref-name": "SolarPotential"
+}

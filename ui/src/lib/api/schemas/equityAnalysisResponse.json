@@ -1,0 +1,136 @@
+{
+  "properties": {
+    "user_address_score": {
+      "properties": {
+        "total_score": {
+          "type": "number",
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Total Score"
+        },
+        "income_component": {
+          "type": "number",
+          "maximum": 40,
+          "minimum": 0,
+          "title": "Income Component"
+        },
+        "ownership_component": {
+          "type": "number",
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Ownership Component"
+        },
+        "burden_component": {
+          "type": "number",
+          "maximum": 20,
+          "minimum": 0,
+          "title": "Burden Component"
+        },
+        "adoption_component": {
+          "type": "number",
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Adoption Component"
+        },
+        "barriers": {
+          "items": { "type": "string" },
+          "type": "array",
+          "title": "Barriers"
+        }
+      },
+      "type": "object",
+      "required": [
+        "total_score",
+        "income_component",
+        "ownership_component",
+        "burden_component",
+        "adoption_component"
+      ],
+      "title": "EquityScoreBreakdown",
+      "description": "Detailed breakdown of equity score components.",
+      "x-readme-ref-name": "EquityScoreBreakdown"
+    },
+    "neighborhood_data": {
+      "items": {
+        "properties": {
+          "block_group_id": { "type": "string", "title": "Block Group Id" },
+          "lat": {
+            "type": "number",
+            "maximum": 90,
+            "minimum": -90,
+            "title": "Lat"
+          },
+          "lng": {
+            "type": "number",
+            "maximum": 180,
+            "minimum": -180,
+            "title": "Lng"
+          },
+          "equity_score": {
+            "type": "number",
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Equity Score"
+          },
+          "median_income": { "type": "number", "title": "Median Income" },
+          "renter_percentage": {
+            "type": "number",
+            "title": "Renter Percentage"
+          },
+          "energy_burden": { "type": "number", "title": "Energy Burden" },
+          "solar_installations": {
+            "type": "integer",
+            "title": "Solar Installations"
+          },
+          "total_households": {
+            "type": "integer",
+            "title": "Total Households"
+          },
+          "barriers": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Barriers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "block_group_id",
+          "lat",
+          "lng",
+          "equity_score",
+          "median_income",
+          "renter_percentage",
+          "energy_burden",
+          "solar_installations",
+          "total_households",
+          "barriers"
+        ],
+        "title": "BlockGroupEquityData",
+        "description": "Equity data for a single Census block group.",
+        "x-readme-ref-name": "BlockGroupEquityData"
+      },
+      "type": "array",
+      "title": "Neighborhood Data"
+    },
+    "solar_deserts_count": {
+      "type": "integer",
+      "title": "Solar Deserts Count",
+      "description": "Count of block groups with score < 35"
+    },
+    "area_description": {
+      "type": "string",
+      "title": "Area Description",
+      "description": "e.g., 'Princeton, NJ area'"
+    }
+  },
+  "type": "object",
+  "required": [
+    "user_address_score",
+    "neighborhood_data",
+    "solar_deserts_count",
+    "area_description"
+  ],
+  "title": "EquityAnalysisResponse",
+  "description": "Response model for equity analysis API.",
+  "x-readme-ref-name": "EquityAnalysisResponse"
+}

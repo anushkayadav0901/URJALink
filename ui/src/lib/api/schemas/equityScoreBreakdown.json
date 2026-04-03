@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "total_score": {
+      "type": "number",
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Total Score"
+    },
+    "income_component": {
+      "type": "number",
+      "maximum": 40,
+      "minimum": 0,
+      "title": "Income Component"
+    },
+    "ownership_component": {
+      "type": "number",
+      "maximum": 30,
+      "minimum": 0,
+      "title": "Ownership Component"
+    },
+    "burden_component": {
+      "type": "number",
+      "maximum": 20,
+      "minimum": 0,
+      "title": "Burden Component"
+    },
+    "adoption_component": {
+      "type": "number",
+      "maximum": 10,
+      "minimum": 0,
+      "title": "Adoption Component"
+    },
+    "barriers": {
+      "items": { "type": "string" },
+      "type": "array",
+      "title": "Barriers"
+    }
+  },
+  "type": "object",
+  "required": [
+    "total_score",
+    "income_component",
+    "ownership_component",
+    "burden_component",
+    "adoption_component"
+  ],
+  "title": "EquityScoreBreakdown",
+  "description": "Detailed breakdown of equity score components.",
+  "x-readme-ref-name": "EquityScoreBreakdown"
+}

@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "current_monthly_bill": {
+      "type": "number",
+      "title": "Current Monthly Bill"
+    },
+    "new_monthly_bill": { "type": "number", "title": "New Monthly Bill" }
+  },
+  "type": "object",
+  "required": ["current_monthly_bill", "new_monthly_bill"],
+  "title": "BillComparisonResponse",
+  "description": "Bill comparison before/after solar installation.",
+  "x-readme-ref-name": "BillComparisonResponse"
+}

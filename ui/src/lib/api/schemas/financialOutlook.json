@@ -1,0 +1,36 @@
+{
+  "properties": {
+    "system_cost_net": { "type": "number", "title": "System Cost Net" },
+    "total_net_savings_25_years": {
+      "type": "number",
+      "title": "Total Net Savings 25 Years"
+    },
+    "net_profit_25_years": { "type": "number", "title": "Net Profit 25 Years" },
+    "payback_period_years": {
+      "type": "number",
+      "title": "Payback Period Years"
+    },
+    "roi_25_years": { "type": "number", "title": "Roi 25 Years" },
+    "first_year_savings_gross": {
+      "type": "number",
+      "title": "First Year Savings Gross"
+    },
+    "first_year_savings_net": {
+      "type": "number",
+      "title": "First Year Savings Net"
+    }
+  },
+  "type": "object",
+  "required": [
+    "system_cost_net",
+    "total_net_savings_25_years",
+    "net_profit_25_years",
+    "payback_period_years",
+    "roi_25_years",
+    "first_year_savings_gross",
+    "first_year_savings_net"
+  ],
+  "title": "FinancialOutlook",
+  "description": "Key financial metrics derived from the financial analysis module.",
+  "x-readme-ref-name": "FinancialOutlook"
+}

@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File",
+      "description": "Electricity bill PDF file"
+    },
+    "first_year_savings_net": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "First Year Savings Net"
+    },
+    "payback_period_years": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Payback Period Years"
+    },
+    "monthly_savings": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Monthly Savings"
+    }
+  },
+  "type": "object",
+  "required": [
+    "file",
+    "first_year_savings_net",
+    "payback_period_years",
+    "monthly_savings"
+  ],
+  "title": "Body_bill_comparison_api_v1_bill_comparison_post",
+  "x-readme-ref-name": "Body_bill_comparison_api_v1_bill_comparison_post"
+}

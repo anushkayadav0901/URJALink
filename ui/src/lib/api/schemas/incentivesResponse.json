@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "analysis_id": { "type": "string", "title": "Analysis Id" },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Generated At"
+    },
+    "incentives_markdown": { "type": "string", "title": "Incentives Markdown" },
+    "model_name": { "type": "string", "title": "Model Name" }
+  },
+  "type": "object",
+  "required": [
+    "analysis_id",
+    "generated_at",
+    "incentives_markdown",
+    "model_name"
+  ],
+  "title": "IncentivesResponse",
+  "description": "Solar incentives and rebates search results.",
+  "x-readme-ref-name": "IncentivesResponse"
+}

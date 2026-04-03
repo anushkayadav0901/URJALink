@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "coordinates": {
+      "items": { "items": { "type": "number" }, "type": "array" },
+      "type": "array",
+      "title": "Coordinates"
+    },
+    "area_sqft": { "type": "number", "title": "Area Sqft" },
+    "confidence": { "type": "number", "title": "Confidence" }
+  },
+  "type": "object",
+  "required": ["coordinates", "area_sqft", "confidence"],
+  "title": "RoofPolygon",
+  "description": "Roof polygon coordinates for frontend Google Maps overlay",
+  "x-readme-ref-name": "RoofPolygon"
+}

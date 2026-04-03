@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "peak_sun_hours_daily": {
+      "type": "number",
+      "title": "Peak Sun Hours Daily"
+    },
+    "annual_irradiance_kwh_m2": {
+      "type": "number",
+      "title": "Annual Irradiance Kwh M2"
+    },
+    "seasonal_variation": {
+      "properties": {
+        "summer_sun_hours": { "type": "number", "title": "Summer Sun Hours" },
+        "winter_sun_hours": { "type": "number", "title": "Winter Sun Hours" }
+      },
+      "type": "object",
+      "required": ["summer_sun_hours", "winter_sun_hours"],
+      "title": "SeasonalVariation",
+      "x-readme-ref-name": "SeasonalVariation"
+    }
+  },
+  "type": "object",
+  "required": [
+    "peak_sun_hours_daily",
+    "annual_irradiance_kwh_m2",
+    "seasonal_variation"
+  ],
+  "title": "SolarData",
+  "x-readme-ref-name": "SolarData"
+}

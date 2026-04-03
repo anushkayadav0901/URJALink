@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "summer_sun_hours": { "type": "number", "title": "Summer Sun Hours" },
+    "winter_sun_hours": { "type": "number", "title": "Winter Sun Hours" }
+  },
+  "type": "object",
+  "required": ["summer_sun_hours", "winter_sun_hours"],
+  "title": "SeasonalVariation",
+  "x-readme-ref-name": "SeasonalVariation"
+}

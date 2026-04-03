@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "analysis_id": { "type": "string", "title": "Analysis Id" },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Generated At"
+    },
+    "installers_markdown": { "type": "string", "title": "Installers Markdown" },
+    "model_name": { "type": "string", "title": "Model Name" }
+  },
+  "type": "object",
+  "required": [
+    "analysis_id",
+    "generated_at",
+    "installers_markdown",
+    "model_name"
+  ],
+  "title": "InstallersResponse",
+  "description": "Solar installers search results.",
+  "x-readme-ref-name": "InstallersResponse"
+}

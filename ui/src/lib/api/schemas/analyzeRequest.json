@@ -1,0 +1,43 @@
+{
+  "properties": {
+    "latitude": {
+      "type": "number",
+      "maximum": 90,
+      "minimum": -90,
+      "title": "Latitude"
+    },
+    "longitude": {
+      "type": "number",
+      "maximum": 180,
+      "minimum": -180,
+      "title": "Longitude"
+    },
+    "address": { "type": "string", "title": "Address", "default": "" },
+    "state": {
+      "type": "string",
+      "maxLength": 2,
+      "minLength": 2,
+      "title": "State",
+      "description": "US state/territory code (e.g., CA)"
+    },
+    "zip_code": {
+      "anyOf": [{ "type": "string" }, { "type": "null" }],
+      "title": "Zip Code"
+    },
+    "user_polygon": {
+      "anyOf": [
+        {
+          "items": { "items": { "type": "number" }, "type": "array" },
+          "type": "array"
+        },
+        { "type": "null" }
+      ],
+      "title": "User Polygon",
+      "description": "User-drawn polygon coordinates as [[lat, lng], [lat, lng], ...], minimum 3 points"
+    }
+  },
+  "type": "object",
+  "required": ["latitude", "longitude", "state"],
+  "title": "AnalyzeRequest",
+  "x-readme-ref-name": "AnalyzeRequest"
+}

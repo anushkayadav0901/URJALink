@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "components": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Components"
+    },
+    "formula": { "type": "string", "title": "Formula" }
+  },
+  "type": "object",
+  "required": ["components", "formula"],
+  "title": "SolarScoreBreakdown",
+  "description": "Detailed breakdown of how solar score was calculated",
+  "x-readme-ref-name": "SolarScoreBreakdown"
+}

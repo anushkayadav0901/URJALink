@@ -1,0 +1,425 @@
+{
+  "properties": {
+    "analysis_id": { "type": "string", "title": "Analysis Id" },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Timestamp"
+    },
+    "location": {
+      "properties": {
+        "latitude": { "type": "number", "title": "Latitude" },
+        "longitude": { "type": "number", "title": "Longitude" },
+        "address": { "type": "string", "title": "Address" }
+      },
+      "type": "object",
+      "required": ["latitude", "longitude", "address"],
+      "title": "Location",
+      "x-readme-ref-name": "Location"
+    },
+    "roof_analysis": {
+      "properties": {
+        "total_area_sqft": { "type": "number", "title": "Total Area Sqft" },
+        "usable_area_sqft": { "type": "number", "title": "Usable Area Sqft" },
+        "roof_segments": {
+          "items": {
+            "properties": {
+              "segment_id": { "type": "integer", "title": "Segment Id" },
+              "area_sqft": { "type": "number", "title": "Area Sqft" },
+              "orientation_degrees": {
+                "type": "integer",
+                "title": "Orientation Degrees"
+              },
+              "orientation_cardinal": {
+                "type": "string",
+                "title": "Orientation Cardinal"
+              },
+              "tilt_degrees": { "type": "number", "title": "Tilt Degrees" },
+              "panel_capacity": {
+                "type": "integer",
+                "title": "Panel Capacity"
+              },
+              "polygon": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "coordinates": {
+                        "items": {
+                          "items": { "type": "number" },
+                          "type": "array"
+                        },
+                        "type": "array",
+                        "title": "Coordinates"
+                      },
+                      "area_sqft": { "type": "number", "title": "Area Sqft" },
+                      "confidence": { "type": "number", "title": "Confidence" }
+                    },
+                    "type": "object",
+                    "required": ["coordinates", "area_sqft", "confidence"],
+                    "title": "RoofPolygon",
+                    "description": "Roof polygon coordinates for frontend Google Maps overlay",
+                    "x-readme-ref-name": "RoofPolygon"
+                  },
+                  { "type": "null" }
+                ]
+              }
+            },
+            "type": "object",
+            "required": [
+              "segment_id",
+              "area_sqft",
+              "orientation_degrees",
+              "orientation_cardinal",
+              "tilt_degrees",
+              "panel_capacity"
+            ],
+            "title": "RoofSegment",
+            "x-readme-ref-name": "RoofSegment"
+          },
+          "type": "array",
+          "title": "Roof Segments"
+        },
+        "obstacles": {
+          "properties": {
+            "chimneys": {
+              "type": "integer",
+              "title": "Chimneys",
+              "default": 0
+            },
+            "skylights": {
+              "type": "integer",
+              "title": "Skylights",
+              "default": 0
+            },
+            "trees_nearby": {
+              "type": "boolean",
+              "title": "Trees Nearby",
+              "default": false
+            },
+            "hvac_units": {
+              "type": "integer",
+              "title": "Hvac Units",
+              "default": 0
+            }
+          },
+          "type": "object",
+          "title": "Obstacles",
+          "x-readme-ref-name": "Obstacles"
+        },
+        "confidence_score": { "type": "number", "title": "Confidence Score" }
+      },
+      "type": "object",
+      "required": [
+        "total_area_sqft",
+        "usable_area_sqft",
+        "roof_segments",
+        "obstacles",
+        "confidence_score"
+      ],
+      "title": "RoofAnalysis",
+      "x-readme-ref-name": "RoofAnalysis"
+    },
+    "solar_data": {
+      "properties": {
+        "peak_sun_hours_daily": {
+          "type": "number",
+          "title": "Peak Sun Hours Daily"
+        },
+        "annual_irradiance_kwh_m2": {
+          "type": "number",
+          "title": "Annual Irradiance Kwh M2"
+        },
+        "seasonal_variation": {
+          "properties": {
+            "summer_sun_hours": {
+              "type": "number",
+              "title": "Summer Sun Hours"
+            },
+            "winter_sun_hours": {
+              "type": "number",
+              "title": "Winter Sun Hours"
+            }
+          },
+          "type": "object",
+          "required": ["summer_sun_hours", "winter_sun_hours"],
+          "title": "SeasonalVariation",
+          "x-readme-ref-name": "SeasonalVariation"
+        }
+      },
+      "type": "object",
+      "required": [
+        "peak_sun_hours_daily",
+        "annual_irradiance_kwh_m2",
+        "seasonal_variation"
+      ],
+      "title": "SolarData",
+      "x-readme-ref-name": "SolarData"
+    },
+    "solar_potential": {
+      "properties": {
+        "system_size_kw": { "type": "number", "title": "System Size Kw" },
+        "annual_generation_kwh": {
+          "type": "integer",
+          "title": "Annual Generation Kwh"
+        },
+        "daily_generation_kwh": {
+          "type": "number",
+          "title": "Daily Generation Kwh"
+        },
+        "capacity_factor": { "type": "number", "title": "Capacity Factor" },
+        "energy_offset_percent": {
+          "type": "integer",
+          "title": "Energy Offset Percent"
+        },
+        "co2_offset_tons_yearly": {
+          "type": "number",
+          "title": "Co2 Offset Tons Yearly"
+        },
+        "co2_offset_tons_25year": {
+          "type": "integer",
+          "title": "Co2 Offset Tons 25Year"
+        },
+        "equivalent_trees_planted": {
+          "type": "integer",
+          "title": "Equivalent Trees Planted"
+        }
+      },
+      "type": "object",
+      "required": [
+        "system_size_kw",
+        "annual_generation_kwh",
+        "daily_generation_kwh",
+        "capacity_factor",
+        "energy_offset_percent",
+        "co2_offset_tons_yearly",
+        "co2_offset_tons_25year",
+        "equivalent_trees_planted"
+      ],
+      "title": "SolarPotential",
+      "x-readme-ref-name": "SolarPotential"
+    },
+    "solar_score": { "type": "integer", "title": "Solar Score" },
+    "solar_score_breakdown": {
+      "anyOf": [
+        {
+          "properties": {
+            "components": {
+              "additionalProperties": true,
+              "type": "object",
+              "title": "Components"
+            },
+            "formula": { "type": "string", "title": "Formula" }
+          },
+          "type": "object",
+          "required": ["components", "formula"],
+          "title": "SolarScoreBreakdown",
+          "description": "Detailed breakdown of how solar score was calculated",
+          "x-readme-ref-name": "SolarScoreBreakdown"
+        },
+        { "type": "null" }
+      ]
+    },
+    "financial_outlook": {
+      "properties": {
+        "system_cost_net": { "type": "number", "title": "System Cost Net" },
+        "total_net_savings_25_years": {
+          "type": "number",
+          "title": "Total Net Savings 25 Years"
+        },
+        "net_profit_25_years": {
+          "type": "number",
+          "title": "Net Profit 25 Years"
+        },
+        "payback_period_years": {
+          "type": "number",
+          "title": "Payback Period Years"
+        },
+        "roi_25_years": { "type": "number", "title": "Roi 25 Years" },
+        "first_year_savings_gross": {
+          "type": "number",
+          "title": "First Year Savings Gross"
+        },
+        "first_year_savings_net": {
+          "type": "number",
+          "title": "First Year Savings Net"
+        }
+      },
+      "type": "object",
+      "required": [
+        "system_cost_net",
+        "total_net_savings_25_years",
+        "net_profit_25_years",
+        "payback_period_years",
+        "roi_25_years",
+        "first_year_savings_gross",
+        "first_year_savings_net"
+      ],
+      "title": "FinancialOutlook",
+      "description": "Key financial metrics derived from the financial analysis module.",
+      "x-readme-ref-name": "FinancialOutlook"
+    },
+    "equity_analysis": {
+      "anyOf": [
+        {
+          "properties": {
+            "user_address_score": {
+              "properties": {
+                "total_score": {
+                  "type": "number",
+                  "maximum": 100,
+                  "minimum": 0,
+                  "title": "Total Score"
+                },
+                "income_component": {
+                  "type": "number",
+                  "maximum": 40,
+                  "minimum": 0,
+                  "title": "Income Component"
+                },
+                "ownership_component": {
+                  "type": "number",
+                  "maximum": 30,
+                  "minimum": 0,
+                  "title": "Ownership Component"
+                },
+                "burden_component": {
+                  "type": "number",
+                  "maximum": 20,
+                  "minimum": 0,
+                  "title": "Burden Component"
+                },
+                "adoption_component": {
+                  "type": "number",
+                  "maximum": 10,
+                  "minimum": 0,
+                  "title": "Adoption Component"
+                },
+                "barriers": {
+                  "items": { "type": "string" },
+                  "type": "array",
+                  "title": "Barriers"
+                }
+              },
+              "type": "object",
+              "required": [
+                "total_score",
+                "income_component",
+                "ownership_component",
+                "burden_component",
+                "adoption_component"
+              ],
+              "title": "EquityScoreBreakdown",
+              "description": "Detailed breakdown of equity score components.",
+              "x-readme-ref-name": "EquityScoreBreakdown"
+            },
+            "neighborhood_data": {
+              "items": {
+                "properties": {
+                  "block_group_id": {
+                    "type": "string",
+                    "title": "Block Group Id"
+                  },
+                  "lat": {
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90,
+                    "title": "Lat"
+                  },
+                  "lng": {
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180,
+                    "title": "Lng"
+                  },
+                  "equity_score": {
+                    "type": "number",
+                    "maximum": 100,
+                    "minimum": 0,
+                    "title": "Equity Score"
+                  },
+                  "median_income": {
+                    "type": "number",
+                    "title": "Median Income"
+                  },
+                  "renter_percentage": {
+                    "type": "number",
+                    "title": "Renter Percentage"
+                  },
+                  "energy_burden": {
+                    "type": "number",
+                    "title": "Energy Burden"
+                  },
+                  "solar_installations": {
+                    "type": "integer",
+                    "title": "Solar Installations"
+                  },
+                  "total_households": {
+                    "type": "integer",
+                    "title": "Total Households"
+                  },
+                  "barriers": {
+                    "items": { "type": "string" },
+                    "type": "array",
+                    "title": "Barriers"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "block_group_id",
+                  "lat",
+                  "lng",
+                  "equity_score",
+                  "median_income",
+                  "renter_percentage",
+                  "energy_burden",
+                  "solar_installations",
+                  "total_households",
+                  "barriers"
+                ],
+                "title": "BlockGroupEquityData",
+                "description": "Equity data for a single Census block group.",
+                "x-readme-ref-name": "BlockGroupEquityData"
+              },
+              "type": "array",
+              "title": "Neighborhood Data"
+            },
+            "solar_deserts_count": {
+              "type": "integer",
+              "title": "Solar Deserts Count",
+              "description": "Count of block groups with score < 35"
+            },
+            "area_description": {
+              "type": "string",
+              "title": "Area Description",
+              "description": "e.g., 'Princeton, NJ area'"
+            }
+          },
+          "type": "object",
+          "required": [
+            "user_address_score",
+            "neighborhood_data",
+            "solar_deserts_count",
+            "area_description"
+          ],
+          "title": "EquityAnalysisResponse",
+          "description": "Response model for equity analysis API.",
+          "x-readme-ref-name": "EquityAnalysisResponse"
+        },
+        { "type": "null" }
+      ]
+    }
+  },
+  "type": "object",
+  "required": [
+    "analysis_id",
+    "timestamp",
+    "location",
+    "roof_analysis",
+    "solar_data",
+    "solar_potential",
+    "solar_score",
+    "financial_outlook"
+  ],
+  "title": "AnalysisResponse",
+  "x-readme-ref-name": "AnalysisResponse"
+}

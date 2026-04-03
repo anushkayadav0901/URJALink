@@ -1,0 +1,113 @@
+{
+  "properties": {
+    "analysis_id": { "type": "string", "title": "Analysis Id" },
+    "location": {
+      "properties": {
+        "latitude": { "type": "number", "title": "Latitude" },
+        "longitude": { "type": "number", "title": "Longitude" },
+        "address": { "type": "string", "title": "Address" }
+      },
+      "type": "object",
+      "required": ["latitude", "longitude", "address"],
+      "title": "Location",
+      "x-readme-ref-name": "Location"
+    },
+    "solar_potential": {
+      "properties": {
+        "system_size_kw": { "type": "number", "title": "System Size Kw" },
+        "annual_generation_kwh": {
+          "type": "integer",
+          "title": "Annual Generation Kwh"
+        },
+        "daily_generation_kwh": {
+          "type": "number",
+          "title": "Daily Generation Kwh"
+        },
+        "capacity_factor": { "type": "number", "title": "Capacity Factor" },
+        "energy_offset_percent": {
+          "type": "integer",
+          "title": "Energy Offset Percent"
+        },
+        "co2_offset_tons_yearly": {
+          "type": "number",
+          "title": "Co2 Offset Tons Yearly"
+        },
+        "co2_offset_tons_25year": {
+          "type": "integer",
+          "title": "Co2 Offset Tons 25Year"
+        },
+        "equivalent_trees_planted": {
+          "type": "integer",
+          "title": "Equivalent Trees Planted"
+        }
+      },
+      "type": "object",
+      "required": [
+        "system_size_kw",
+        "annual_generation_kwh",
+        "daily_generation_kwh",
+        "capacity_factor",
+        "energy_offset_percent",
+        "co2_offset_tons_yearly",
+        "co2_offset_tons_25year",
+        "equivalent_trees_planted"
+      ],
+      "title": "SolarPotential",
+      "x-readme-ref-name": "SolarPotential"
+    },
+    "financial_outlook": {
+      "properties": {
+        "system_cost_net": { "type": "number", "title": "System Cost Net" },
+        "total_net_savings_25_years": {
+          "type": "number",
+          "title": "Total Net Savings 25 Years"
+        },
+        "net_profit_25_years": {
+          "type": "number",
+          "title": "Net Profit 25 Years"
+        },
+        "payback_period_years": {
+          "type": "number",
+          "title": "Payback Period Years"
+        },
+        "roi_25_years": { "type": "number", "title": "Roi 25 Years" },
+        "first_year_savings_gross": {
+          "type": "number",
+          "title": "First Year Savings Gross"
+        },
+        "first_year_savings_net": {
+          "type": "number",
+          "title": "First Year Savings Net"
+        }
+      },
+      "type": "object",
+      "required": [
+        "system_cost_net",
+        "total_net_savings_25_years",
+        "net_profit_25_years",
+        "payback_period_years",
+        "roi_25_years",
+        "first_year_savings_gross",
+        "first_year_savings_net"
+      ],
+      "title": "FinancialOutlook",
+      "description": "Key financial metrics derived from the financial analysis module.",
+      "x-readme-ref-name": "FinancialOutlook"
+    },
+    "additional_context": {
+      "anyOf": [{ "type": "string" }, { "type": "null" }],
+      "title": "Additional Context",
+      "description": "Optional free-form notes to steer the narrative tone."
+    }
+  },
+  "type": "object",
+  "required": [
+    "analysis_id",
+    "location",
+    "solar_potential",
+    "financial_outlook"
+  ],
+  "title": "SummaryRequest",
+  "description": "Payload for requesting a Gemini-generated narrative summary.",
+  "x-readme-ref-name": "SummaryRequest"
+}

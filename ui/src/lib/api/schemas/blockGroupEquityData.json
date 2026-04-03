@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "block_group_id": { "type": "string", "title": "Block Group Id" },
+    "lat": { "type": "number", "maximum": 90, "minimum": -90, "title": "Lat" },
+    "lng": {
+      "type": "number",
+      "maximum": 180,
+      "minimum": -180,
+      "title": "Lng"
+    },
+    "equity_score": {
+      "type": "number",
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Equity Score"
+    },
+    "median_income": { "type": "number", "title": "Median Income" },
+    "renter_percentage": { "type": "number", "title": "Renter Percentage" },
+    "energy_burden": { "type": "number", "title": "Energy Burden" },
+    "solar_installations": {
+      "type": "integer",
+      "title": "Solar Installations"
+    },
+    "total_households": { "type": "integer", "title": "Total Households" },
+    "barriers": {
+      "items": { "type": "string" },
+      "type": "array",
+      "title": "Barriers"
+    }
+  },
+  "type": "object",
+  "required": [
+    "block_group_id",
+    "lat",
+    "lng",
+    "equity_score",
+    "median_income",
+    "renter_percentage",
+    "energy_burden",
+    "solar_installations",
+    "total_households",
+    "barriers"
+  ],
+  "title": "BlockGroupEquityData",
+  "description": "Equity data for a single Census block group.",
+  "x-readme-ref-name": "BlockGroupEquityData"
+}

@@ -1,0 +1,54 @@
+{
+  "properties": {
+    "analysis_id": { "type": "string", "title": "Analysis Id" },
+    "latitude": {
+      "type": "number",
+      "maximum": 90,
+      "minimum": -90,
+      "title": "Latitude"
+    },
+    "longitude": {
+      "type": "number",
+      "maximum": 180,
+      "minimum": -180,
+      "title": "Longitude"
+    },
+    "address": { "type": "string", "title": "Address" },
+    "system_size_kw": { "type": "number", "title": "System Size Kw" },
+    "annual_generation_kwh": {
+      "type": "integer",
+      "title": "Annual Generation Kwh"
+    },
+    "state": {
+      "anyOf": [{ "type": "string" }, { "type": "null" }],
+      "title": "State"
+    },
+    "zip_code": {
+      "anyOf": [{ "type": "string" }, { "type": "null" }],
+      "title": "Zip Code"
+    },
+    "user_polygon": {
+      "anyOf": [
+        {
+          "items": { "items": { "type": "number" }, "type": "array" },
+          "type": "array"
+        },
+        { "type": "null" }
+      ],
+      "title": "User Polygon",
+      "description": "User-drawn polygon coordinates as [[lat, lng], [lat, lng], ...]"
+    }
+  },
+  "type": "object",
+  "required": [
+    "analysis_id",
+    "latitude",
+    "longitude",
+    "address",
+    "system_size_kw",
+    "annual_generation_kwh"
+  ],
+  "title": "AgentsRequest",
+  "description": "Request for agent analysis after solar analysis",
+  "x-readme-ref-name": "AgentsRequest"
+}

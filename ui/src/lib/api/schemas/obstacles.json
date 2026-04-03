@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "chimneys": { "type": "integer", "title": "Chimneys", "default": 0 },
+    "skylights": { "type": "integer", "title": "Skylights", "default": 0 },
+    "trees_nearby": {
+      "type": "boolean",
+      "title": "Trees Nearby",
+      "default": false
+    },
+    "hvac_units": { "type": "integer", "title": "Hvac Units", "default": 0 }
+  },
+  "type": "object",
+  "title": "Obstacles",
+  "x-readme-ref-name": "Obstacles"
+}
