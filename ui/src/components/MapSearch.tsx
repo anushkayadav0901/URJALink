@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Search, X, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Search, X, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 
@@ -9,7 +9,7 @@ const searchSchema = z.object({
 
 interface Prediction {
   description: string;
-  place_id: string;
+  placeId: string;
 }
 
 interface MapSearchProps {
@@ -21,61 +21,128 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+  const [isApiReady, setIsApiReady] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [showDropdown, setShowDropdown] = useState(false);
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Initialize the new Places API
   useEffect(() => {
-    console.log("🔍 MapSearch mounted, checking for Google Maps...");
+    console.log("🔍 MapSearch mounted, initializing Places (New) API...");
 
-    // Poll for google.maps.places to be available
-    const checkGoogleLoaded = () => {
-      if (window.google?.maps?.places?.AutocompleteService) {
-        try {
-          if (!autocompleteService.current) {
-            autocompleteService.current = new window.google.maps.places.AutocompleteService();
-            console.log("✅ Google Places Autocomplete Service initialized successfully");
-          }
-          setIsGoogleLoaded(true);
-          return true;
-        } catch (error) {
-          console.error("❌ Error creating AutocompleteService:", error);
+    const initPlaces = async () => {
+      try {
+        // Wait for google.maps to be available
+        if (!window.google?.maps?.importLibrary) {
+          console.log("⏳ Waiting for Google Maps core...");
           return false;
         }
+
+        // Import the places library using the new API
+        const placesLib = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+
+        if (placesLib.AutocompleteSuggestion && placesLib.AutocompleteSessionToken) {
+          // Create a session token for billing optimization
+          sessionTokenRef.current = new placesLib.AutocompleteSessionToken();
+          setIsApiReady(true);
+          setApiError(null);
+          console.log("✅ Places (New) API initialized with AutocompleteSuggestion");
+          return true;
+        } else {
+          console.error("❌ AutocompleteSuggestion not available in places library");
+          setApiError("AutocompleteSuggestion not available. Ensure Places API (New) is enabled.");
+          return false;
+        }
+      } catch (error) {
+        console.error("❌ Error initializing Places API:", error);
+        setApiError(`Failed to initialize Places API: ${error}`);
+        return false;
       }
-      return false;
     };
 
-    if (checkGoogleLoaded()) return;
+    // Poll until google.maps is available
+    const tryInit = async () => {
+      if (await initPlaces()) return;
 
-    console.log("⏳ Waiting for Google Maps to load...");
-    // Poll every 100ms for up to 10 seconds
-    const interval = setInterval(() => {
-      if (checkGoogleLoaded()) {
+      const interval = setInterval(async () => {
+        if (await initPlaces()) {
+          clearInterval(interval);
+        }
+      }, 200);
+
+      const timeout = setTimeout(() => {
         clearInterval(interval);
-      }
-    }, 100);
+        if (!isApiReady) {
+          setApiError("Google Places API failed to load after 15 seconds. Check API key and billing.");
+          console.error("❌ Places API timed out");
+        }
+      }, 15000);
 
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      console.error("❌ Google Maps Places API failed to load after 10 seconds");
-      console.error("window.google exists:", !!window.google);
-      console.error("window.google.maps exists:", !!(window.google?.maps));
-      console.error("window.google.maps.places exists:", !!(window.google?.maps?.places));
-    }, 10000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
     };
+
+    tryInit();
   }, []);
 
-  useEffect(() => {
-    console.log("🔄 Query changed:", query, "Google loaded:", isGoogleLoaded, "Focused:", isFocused);
+  const fetchPredictions = useCallback(async (searchQuery: string) => {
+    if (!isApiReady) {
+      console.warn("⚠️ Places API not ready yet");
+      return;
+    }
 
+    setIsLoading(true);
+    setApiError(null);
+    console.log("⏳ Fetching suggestions for:", searchQuery);
+
+    try {
+      const request = {
+        input: searchQuery,
+        sessionToken: sessionTokenRef.current!,
+      };
+
+      const response = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+      const suggestions = response.suggestions;
+
+      console.log("📡 API Response - Suggestions:", suggestions?.length || 0);
+
+      if (suggestions && suggestions.length > 0) {
+        const mapped: Prediction[] = suggestions
+          .filter((s) => s.placePrediction)
+          .slice(0, 5)
+          .map((s) => ({
+            description: s.placePrediction!.text.toString(),
+            placeId: s.placePrediction!.placeId,
+          }));
+
+        setPredictions(mapped);
+        setShowDropdown(true);
+        setApiError(null);
+        console.log("✅ Found", mapped.length, "suggestions for:", searchQuery);
+        mapped.forEach((p, i) => console.log(`  ${i + 1}. ${p.description}`));
+      } else {
+        setPredictions([]);
+        setShowDropdown(false);
+        console.log("ℹ️ No results found for:", searchQuery);
+      }
+    } catch (error) {
+      console.error("❌ Autocomplete error:", error);
+      setPredictions([]);
+      setShowDropdown(false);
+      setApiError(`Search failed: ${error instanceof Error ? error.message : error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isApiReady]);
+
+  // Debounced query effect
+  useEffect(() => {
     if (!isFocused) {
       setPredictions([]);
       setSelectedIndex(-1);
@@ -83,8 +150,7 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
       return;
     }
 
-
-    if (!query.trim() || !autocompleteService.current || !isGoogleLoaded) {
+    if (!query.trim() || !isApiReady) {
       setPredictions([]);
       setSelectedIndex(-1);
       setShowDropdown(false);
@@ -93,47 +159,22 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
 
     const validation = searchSchema.safeParse({ query });
     if (!validation.success) {
-      console.log("❌ Query validation failed:", validation.error);
       setPredictions([]);
       setShowDropdown(false);
       return;
     }
 
-    setIsLoading(true);
-    console.log("⏳ Fetching predictions for:", query);
-
     const timer = setTimeout(() => {
-      autocompleteService.current?.getPlacePredictions(
-        {
-          input: query,
-          types: ["geocode"], // Fixed: removed "address" to avoid INVALID_REQUEST
-        },
-        (predictions, status) => {
-          setIsLoading(false);
-          console.log("📡 API Response - Status:", status, "Predictions:", predictions?.length || 0);
-
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-            setPredictions(predictions.slice(0, 5));
-            setShowDropdown(true);
-            console.log("✅ Found", predictions.length, "predictions for:", query);
-            predictions.forEach((p, i) => console.log(`  ${i + 1}. ${p.description}`));
-          } else {
-            setPredictions([]);
-            setShowDropdown(false);
-            console.log(`⚠️ No predictions. Status: ${status}`);
-          }
-        }
-      );
+      fetchPredictions(query);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, isGoogleLoaded]);
+  }, [query, isApiReady, isFocused, fetchPredictions]);
 
-  // Handle clicks outside to close dropdown
+  // Handle clicks outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        console.log("👆 Clicked outside, closing dropdown");
         setShowDropdown(false);
         setIsFocused(false);
       }
@@ -144,22 +185,28 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
   }, []);
 
   const handleSelect = (prediction: Prediction) => {
-    console.log("🎯 Selected prediction:", prediction.description);
+    console.log("🎯 Selected:", prediction.description, "placeId:", prediction.placeId);
     setQuery(prediction.description);
     setPredictions([]);
     setShowDropdown(false);
     setIsFocused(false);
     setSelectedIndex(-1);
-    onPlaceSelect(prediction.place_id, prediction.description);
+
+    // Create a new session token for the next search session
+    if (window.google?.maps?.places?.AutocompleteSessionToken) {
+      sessionTokenRef.current = new google.maps.places.AutocompleteSessionToken();
+    }
+
+    onPlaceSelect(prediction.placeId, prediction.description);
     inputRef.current?.blur();
   };
 
   const handleClear = () => {
-    console.log("🧹 Clearing search");
     setQuery("");
     setPredictions([]);
     setShowDropdown(false);
     setSelectedIndex(-1);
+    setApiError(null);
     inputRef.current?.focus();
   };
 
@@ -175,10 +222,8 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (selectedIndex >= 0 && predictions[selectedIndex]) {
-        console.log("⌨️ Enter pressed with selection:", selectedIndex);
         handleSelect(predictions[selectedIndex]);
       } else if (predictions.length > 0) {
-        console.log("⌨️ Enter pressed, selecting first prediction");
         handleSelect(predictions[0]);
       }
     } else if (e.key === "Escape") {
@@ -187,7 +232,9 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
       setSelectedIndex(-1);
       inputRef.current?.blur();
     }
-  }; return (
+  };
+
+  return (
     <div className="relative w-full max-w-2xl" ref={containerRef}>
       <div
         className={`backdrop-blur-xl bg-glass-bg rounded-2xl border shadow-card transition-all duration-300 ${isFocused ? "border-primary shadow-glow" : "border-glass-border"
@@ -198,19 +245,18 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
           <Input
             ref={inputRef}
             type="text"
-            placeholder={isGoogleLoaded ? "Search for a location..." : "Loading Maps API..."}
+            placeholder={isApiReady ? "Search for a location..." : "Loading Maps API..."}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={() => {
-              console.log("🎯 Input focused");
               setIsFocused(true);
               if (predictions.length > 0) {
                 setShowDropdown(true);
               }
             }}
             className="flex-1 border-0 bg-transparent text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto"
-            disabled={!isGoogleLoaded}
+            disabled={!isApiReady}
           />
           {isLoading && <Loader2 className="w-5 h-5 text-primary animate-spin flex-shrink-0" />}
           {query && !isLoading && (
@@ -224,13 +270,21 @@ export const MapSearch = ({ onPlaceSelect }: MapSearchProps) => {
         </div>
       </div>
 
+      {/* Error banner */}
+      {apiError && (
+        <div className="absolute top-full mt-2 w-full backdrop-blur-xl bg-red-500/10 rounded-xl border border-red-500/30 shadow-card px-4 py-3 z-50 flex items-center gap-3">
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <span className="text-sm text-red-300">{apiError}</span>
+        </div>
+      )}
+
       {showDropdown && predictions.length > 0 && (
         <div className="absolute top-full mt-2 w-full backdrop-blur-xl bg-glass-bg rounded-2xl border border-glass-border shadow-card overflow-hidden animate-scale-in z-50">
           {predictions.map((prediction, index) => (
             <button
-              key={prediction.place_id}
+              key={prediction.placeId}
               onMouseDown={(e) => {
-                e.preventDefault(); // Prevent blur from firing
+                e.preventDefault();
                 handleSelect(prediction);
               }}
               onMouseEnter={() => setSelectedIndex(index)}

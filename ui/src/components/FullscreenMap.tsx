@@ -58,7 +58,7 @@ interface FullscreenMapProps {
 
 export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: FullscreenMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [center, setCenter] = useState({ lat: 40.7128, lng: -74.0060 });
+  const [center, setCenter] = useState({ lat: 28.6139, lng: 77.2090 });
   const [markerPosition, setMarkerPosition] = useState<CoordinatePoint | null>(null);
   const [mapTypeId, setMapTypeId] = useState<"roadmap" | "satellite" | "hybrid">("hybrid");
   const [roofPolygon, setRoofPolygon] = useState<CoordinatePoint[] | null>(null);
@@ -112,44 +112,50 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
   };
 
   useEffect(() => {
-    if (selectedPlaceId && window.google) {
-      const placesService = new window.google.maps.places.PlacesService(
-        document.createElement("div")
-      );
-      
-      placesService.getDetails(
-        {
-          placeId: selectedPlaceId,
-          fields: ["geometry", "formatted_address"],
-        },
-        async (place, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
-            const location = {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            };
-            setCenter(location);
-            setMarkerPosition(location);
-            
-            // Smooth zoom and pan to the location
-            map?.panTo(location);
-            
-            // Zoom in very close to see roof details
-            setTimeout(() => {
-              map?.setZoom(21);
-            }, 300);
-            
-            // Switch to hybrid view (satellite + labels)
-            setMapTypeId("hybrid");
-            
-            console.log("📍 Zoomed to address:", place.formatted_address, "at zoom level 21");
-            
-            // Show tutorial card
-            setShowTutorial(true);
+    if (!selectedPlaceId || !window.google?.maps) return;
+
+    const fetchPlaceDetails = async () => {
+      try {
+        // Use the new Place class (Places API New)
+        const { Place } = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+        const place = new Place({ id: selectedPlaceId });
+        
+        await place.fetchFields({ fields: ["location", "formattedAddress"] });
+        
+        if (place.location) {
+          const location = {
+            lat: place.location.lat(),
+            lng: place.location.lng(),
+          };
+          setCenter(location);
+          setMarkerPosition(location);
+          
+          // Smooth zoom and pan to the location
+          map?.panTo(location);
+          
+          // Zoom in very close to see roof details
+          setTimeout(() => {
+            map?.setZoom(21);
+          }, 300);
+          
+          // Switch to hybrid view (satellite + labels)
+          setMapTypeId("hybrid");
+          
+          console.log("📍 Zoomed to address:", place.formattedAddress, "at zoom level 21");
+          
+          if (place.formattedAddress) {
+            setResolvedAddress(place.formattedAddress);
           }
+          
+          // Show tutorial card
+          setShowTutorial(true);
         }
-      );
-    }
+      } catch (error) {
+        console.error("❌ Error fetching place details:", error);
+      }
+    };
+
+    fetchPlaceDetails();
   }, [selectedPlaceId, map]);
 
   useEffect(() => {

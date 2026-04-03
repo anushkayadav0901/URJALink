@@ -93,7 +93,7 @@ export default function MapTest() {
             >
               <GoogleMap
                 mapContainerStyle={{ width: "100%", height: "100%" }}
-                center={{ lat: 40.7128, lng: -74.0060 }}
+                center={{ lat: 28.6139, lng: 77.2090 }}
                 zoom={10}
                 options={{
                   disableDefaultUI: true,
