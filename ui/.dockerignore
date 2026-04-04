@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-output/
+markdown-test-results.json
+.env
+.git/
+.gitignore
+README.md
+*.md
+scripts/
