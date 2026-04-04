@@ -1,168 +1,38 @@
 // ---------------------------------------------------------------------------
-// URJALINK API Client
-// Mirrors the backend Pydantic models and exposes typed fetch helpers.
+// URJALINK API – Thin adapter layer
+//
+// All types are sourced from the Kubb-generated OpenAPI models.
+// All API calls go through Kubb-generated React Query hooks.
+//
+// This file keeps only:
+//   1. Re-exports of Kubb types (so existing imports don't break)
+//   2. Pure UI helper functions that have no Kubb equivalent
 // ---------------------------------------------------------------------------
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+// ── Re-export Kubb-generated types under their original names ────────────────
 
-// ── Shared Types ──────────────────────────────────────────────────────────────
+export type { Location as URJALINKLocation } from "@/lib/api/models/Location";
+export type { RoofPolygon } from "@/lib/api/models/RoofPolygon";
+export type { RoofSegment } from "@/lib/api/models/RoofSegment";
+export type { Obstacles } from "@/lib/api/models/Obstacles";
+export type { SeasonalVariation } from "@/lib/api/models/SeasonalVariation";
+export type { SolarData } from "@/lib/api/models/SolarData";
+export type { SolarPotential } from "@/lib/api/models/SolarPotential";
+export type { SolarScoreBreakdown } from "@/lib/api/models/SolarScoreBreakdown";
+export type { FinancialOutlook } from "@/lib/api/models/FinancialOutlook";
+export type { EquityScoreBreakdown } from "@/lib/api/models/EquityScoreBreakdown";
+export type { BlockGroupEquityData } from "@/lib/api/models/BlockGroupEquityData";
+export type { EquityAnalysisResponse } from "@/lib/api/models/EquityAnalysisResponse";
+export type { AnalysisResponse as URJALINKResponse } from "@/lib/api/models/AnalysisResponse";
+export type { InstallersResponse } from "@/lib/api/models/InstallersResponse";
+export type { IncentivesResponse } from "@/lib/api/models/IncentivesResponse";
+export type { SummaryResponse } from "@/lib/api/models/SummaryResponse";
+export type { BillComparisonResponse } from "@/lib/api/models/BillComparisonResponse";
 
-export interface URJALINKLocation {
-  latitude: number;
-  longitude: number;
-  address: string;
-}
+// The manual type had a `RoofAnalysis` interface — re-export from Kubb
+export type { RoofAnalysis } from "@/lib/api/models/RoofAnalysis";
 
-export interface RoofPolygon {
-  coordinates: number[][];   // [[lat, lng], …]
-  area_sqft: number;
-  confidence: number;
-}
-
-export interface RoofSegment {
-  segment_id: number;
-  area_sqft: number;
-  orientation_degrees: number;
-  orientation_cardinal: string;
-  tilt_degrees: number;
-  panel_capacity: number;
-  polygon?: RoofPolygon | null;
-}
-
-export interface Obstacles {
-  chimneys: number;
-  skylights: number;
-  trees_nearby: boolean;
-  hvac_units: number;
-}
-
-export interface RoofAnalysis {
-  total_area_sqft: number;
-  usable_area_sqft: number;
-  roof_segments: RoofSegment[];
-  obstacles: Obstacles;
-  confidence_score: number;
-}
-
-export interface SeasonalVariation {
-  summer_sun_hours: number;
-  winter_sun_hours: number;
-}
-
-export interface SolarData {
-  peak_sun_hours_daily: number;
-  annual_irradiance_kwh_m2: number;
-  seasonal_variation: SeasonalVariation;
-}
-
-export interface SolarPotential {
-  system_size_kw: number;
-  annual_generation_kwh: number;
-  daily_generation_kwh: number;
-  capacity_factor: number;
-  energy_offset_percent: number;
-  co2_offset_tons_yearly: number;
-  co2_offset_tons_25year: number;
-  equivalent_trees_planted: number;
-}
-
-export interface ScoreComponent {
-  score: number;
-  weight: number;
-  weighted_score: number;
-  details: string;
-}
-
-export interface SolarScoreBreakdown {
-  components: Record<string, ScoreComponent>;
-  formula: string;
-}
-
-export interface FinancialOutlook {
-  system_cost_net: number;
-  total_net_savings_25_years: number;
-  net_profit_25_years: number;
-  payback_period_years: number;
-  roi_25_years: number;
-  first_year_savings_gross: number;
-  first_year_savings_net: number;
-}
-
-// ── Equity Types ──────────────────────────────────────────────────────────────
-
-export interface EquityScoreBreakdown {
-  total_score: number;
-  income_component: number;
-  ownership_component: number;
-  burden_component: number;
-  adoption_component: number;
-  barriers: string[];
-}
-
-export interface BlockGroupEquityData {
-  block_group_id: string;
-  lat: number;
-  lng: number;
-  equity_score: number;
-  median_income: number;
-  renter_percentage: number;
-  energy_burden: number;
-  solar_installations: number;
-  total_households: number;
-  barriers: string[];
-}
-
-export interface EquityAnalysisResponse {
-  user_address_score: EquityScoreBreakdown;
-  neighborhood_data: BlockGroupEquityData[];
-  solar_deserts_count: number;
-  area_description: string;
-}
-
-// ── Main Analysis Response ────────────────────────────────────────────────────
-
-export interface URJALINKResponse {
-  analysis_id: string;
-  timestamp: string;
-  location: URJALINKLocation;
-  roof_analysis: RoofAnalysis;
-  solar_data: SolarData;
-  solar_potential: SolarPotential;
-  solar_score: number;
-  solar_score_breakdown?: SolarScoreBreakdown;
-  financial_outlook: FinancialOutlook;
-  equity_analysis?: EquityAnalysisResponse;
-}
-
-// ── Agent Responses ───────────────────────────────────────────────────────────
-
-export interface InstallersResponse {
-  analysis_id: string;
-  generated_at: string;
-  installers_markdown: string;
-  model_name: string;
-}
-
-export interface IncentivesResponse {
-  analysis_id: string;
-  generated_at: string;
-  incentives_markdown: string;
-  model_name: string;
-}
-
-export interface SummaryResponse {
-  analysis_id: string;
-  generated_at: string;
-  summary_markdown: string;
-  model_name: string;
-}
-
-export interface BillComparisonResponse {
-  current_monthly_bill: number;
-  new_monthly_bill: number;
-}
-
-// ── Helper: Categorise Equity Score ───────────────────────────────────────────
+// ── UI Helper: Categorise Equity Score ───────────────────────────────────────
 
 export function categorizeEquityScore(
   score: number,
@@ -172,7 +42,7 @@ export function categorizeEquityScore(
   return "solar_desert";
 }
 
-// ── Helper: Convert backend polygon to Google Maps format ─────────────────────
+// ── UI Helper: Convert backend polygon to Google Maps format ─────────────────
 
 /**
  * The backend stores polygons as `[[lat, lng], …]`.
@@ -184,11 +54,12 @@ export function URJALINKPolygonToGoogleMaps(
   return coords.map(([lat, lng]) => ({ lat, lng }));
 }
 
-// ── Helper: Format raw analysis into SolarStats ──────────────────────────────
+// ── UI Helper: Format raw analysis into SolarStats ───────────────────────────
 
 import type { SolarStats } from "@/types/solar";
+import type { AnalysisResponse } from "@/lib/api/models/AnalysisResponse";
 
-export function formatURJALINKStats(response: URJALINKResponse): SolarStats {
+export function formatURJALINKStats(response: AnalysisResponse): SolarStats {
   const { roof_analysis, solar_potential, financial_outlook, solar_score, solar_score_breakdown } = response;
   const segment = roof_analysis.roof_segments[0];
 
@@ -216,182 +87,7 @@ export function formatURJALINKStats(response: URJALINKResponse): SolarStats {
     roofArea: roof_analysis.total_area_sqft,
     tiltAngle: segment?.tilt_degrees ?? 0,
     solarScore: solar_score,
-    solarScoreBreakdown: solar_score_breakdown,
+    solarScoreBreakdown: solar_score_breakdown ?? undefined,
     fullResponse: response,
   };
-}
-
-// ── API Calls ─────────────────────────────────────────────────────────────────
-
-/**
- * Call the main `/api/v1/analyze` endpoint.
- */
-export async function analyzeWithURJALINK(
-  lat: number,
-  lng: number,
-  address: string,
-  userPolygon?: { lat: number; lng: number }[],
-  state?: string,
-): Promise<URJALINKResponse> {
-  // Convert Google Maps polygon to backend format [[lat, lng], …]
-  const user_polygon = userPolygon
-    ? userPolygon.map((p) => [p.lat, p.lng])
-    : undefined;
-
-  // Extract zip from address
-  const zipMatch = address.match(/\b\d{5}\b/);
-  const zip_code = zipMatch ? zipMatch[0] : undefined;
-
-  const body = {
-    latitude: lat,
-    longitude: lng,
-    address,
-    state: state ?? "NJ",
-    zip_code,
-    user_polygon,
-  };
-
-  const res = await fetch(`${API_BASE}/api/v1/analyze`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Analysis failed (${res.status}): ${detail}`);
-  }
-
-  return res.json();
-}
-
-/**
- * Fetch solar installer recommendations.
- */
-export async function fetchInstallers(
-  analysisId: string,
-  lat: number,
-  lng: number,
-  address: string,
-  systemSizeKw: number,
-  annualGenerationKwh: number,
-  state: string,
-  zipCode: string,
-): Promise<InstallersResponse> {
-  const body = {
-    analysis_id: analysisId,
-    latitude: lat,
-    longitude: lng,
-    address,
-    system_size_kw: systemSizeKw,
-    annual_generation_kwh: annualGenerationKwh,
-    state,
-    zip_code: zipCode,
-  };
-
-  const res = await fetch(`${API_BASE}/api/v1/agents/installers`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Installers fetch failed (${res.status}): ${detail}`);
-  }
-
-  return res.json();
-}
-
-/**
- * Fetch solar incentives and rebates.
- */
-export async function fetchIncentives(
-  analysisId: string,
-  lat: number,
-  lng: number,
-  address: string,
-  systemSizeKw: number,
-  annualGenerationKwh: number,
-  state: string,
-  zipCode: string,
-): Promise<IncentivesResponse> {
-  const body = {
-    analysis_id: analysisId,
-    latitude: lat,
-    longitude: lng,
-    address,
-    system_size_kw: systemSizeKw,
-    annual_generation_kwh: annualGenerationKwh,
-    state,
-    zip_code: zipCode,
-  };
-
-  const res = await fetch(`${API_BASE}/api/v1/agents/incentives`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Incentives fetch failed (${res.status}): ${detail}`);
-  }
-
-  return res.json();
-}
-
-/**
- * Request a Gemini-generated narrative summary of the analysis.
- */
-export async function generateNarrativeSummary(
-  payload: {
-    analysis_id: string;
-    location: URJALINKLocation;
-    solar_potential: Record<string, unknown>;
-    financial_outlook: Record<string, unknown>;
-  },
-  options?: { signal?: AbortSignal },
-): Promise<SummaryResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/summary`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    signal: options?.signal,
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Summary generation failed (${res.status}): ${detail}`);
-  }
-
-  return res.json();
-}
-
-/**
- * Upload an electricity bill PDF for before/after comparison.
- */
-export async function uploadBillForComparison(
-  file: File,
-  firstYearSavingsNet: number,
-  paybackPeriodYears: number,
-  monthlySavings: number,
-): Promise<BillComparisonResponse> {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("first_year_savings_net", String(firstYearSavingsNet));
-  formData.append("payback_period_years", String(paybackPeriodYears));
-  formData.append("monthly_savings", String(monthlySavings));
-
-  const res = await fetch(`${API_BASE}/api/v1/bill-comparison`, {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Bill comparison failed (${res.status}): ${detail}`);
-  }
-
-  return res.json();
 }

@@ -1,8 +1,10 @@
-import type { URJALINKLocation, URJALINKResponse, SolarScoreBreakdown } from "@/lib/URJALINK-api";
+import type { Location } from "@/lib/api/models/Location";
+import type { AnalysisResponse } from "@/lib/api/models/AnalysisResponse";
+import type { SolarScoreBreakdown } from "@/lib/api/models/SolarScoreBreakdown";
 
 export interface SolarStats {
   analysisId: string;
-  location: URJALINKLocation;
+  location: Location;
   maxPanels: number;
   roofAreaSqft: number;
   usableAreaSqft: number;
@@ -25,5 +27,6 @@ export interface SolarStats {
   tiltAngle: number;
   solarScore?: number;
   solarScoreBreakdown?: SolarScoreBreakdown;
-  fullResponse: URJALINKResponse;
+  fullResponse: AnalysisResponse;
 }
+

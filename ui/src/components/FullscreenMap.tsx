@@ -4,7 +4,11 @@ import { Layers, Pencil, Trash2, Undo2, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Point, calculatePolygonArea } from "@/lib/roof-detection";
-import { analyzeWithURJALINK, URJALINKPolygonToGoogleMaps, formatURJALINKStats, fetchInstallers, fetchIncentives } from "@/lib/URJALINK-api";
+import { URJALINKPolygonToGoogleMaps, formatURJALINKStats } from "@/lib/URJALINK-api";
+import { useAnalyzeApiV1AnalyzePost } from "@/lib/api/hooks/useAnalyzeApiV1AnalyzePost";
+import { useAgentsInstallersApiV1AgentsInstallersPost } from "@/lib/api/hooks/useAgentsInstallersApiV1AgentsInstallersPost";
+import { useAgentsIncentivesApiV1AgentsIncentivesPost } from "@/lib/api/hooks/useAgentsIncentivesApiV1AgentsIncentivesPost";
+import { apiClientConfig } from "@/lib/api-config";
 import { SolarResultsOverlay } from "./SolarResultsOverlay";
 import type { SolarStats } from "@/types/solar";
 
@@ -64,12 +68,17 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
   const [roofPolygon, setRoofPolygon] = useState<CoordinatePoint[] | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawingPoints, setDrawingPoints] = useState<CoordinatePoint[]>([]);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<SolarStats | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+
+  // Kubb-generated mutation hooks
+  const analyzeMutation = useAnalyzeApiV1AnalyzePost({ client: apiClientConfig });
+  const installersMutation = useAgentsInstallersApiV1AgentsInstallersPost({ client: apiClientConfig });
+  const incentivesMutation = useAgentsIncentivesApiV1AgentsIncentivesPost({ client: apiClientConfig });
+  const isAnalyzing = analyzeMutation.isPending;
 
   const mapOptions = {
     disableDefaultUI: true,
@@ -274,7 +283,6 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       setMarkerPosition(referencePosition);
     }
 
-    setIsAnalyzing(true);
     const toastId = 'analyzing-roof';
     
     try {
@@ -301,14 +309,26 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       // Extract state from address
       const stateCode = extractStateCode(fallbackAddress);
 
-      // Call URJALINK backend with user polygon if available
-      const result = await analyzeWithURJALINK(
-        referencePosition.lat,
-        referencePosition.lng,
-        fallbackAddress,
-        roofPolygon || undefined,  // Send user-drawn polygon coordinates
-        stateCode || undefined  // Send state code
-      );
+      // Convert Google Maps polygon to backend format [[lat, lng], …]
+      const user_polygon = roofPolygon
+        ? roofPolygon.map((p) => [p.lat, p.lng])
+        : undefined;
+
+      // Extract zip from address
+      const zipMatch = fallbackAddress.match(/\b\d{5}\b/);
+      const zip_code = zipMatch ? zipMatch[0] : undefined;
+
+      // Call via Kubb-generated mutation hook
+      const result = await analyzeMutation.mutateAsync({
+        data: {
+          latitude: referencePosition.lat,
+          longitude: referencePosition.lng,
+          address: fallbackAddress,
+          state: stateCode || "NJ",
+          zip_code,
+          user_polygon,
+        },
+      });
 
       // Extract polygon from roof segments (first segment contains the main polygon)
       const polygonCoords = result.roof_analysis.roof_segments[0]?.polygon?.coordinates || [];
@@ -340,33 +360,35 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
         coordinates: polygon,
       });
 
-      // Prefetch installers and incentives data asynchronously (don't await)
+      // Prefetch installers and incentives data asynchronously (fire and forget)
       if (stats.analysisId && stateCode) {
-        const zipMatch = fallbackAddress.match(/\b\d{5}\b/);
         const zipCode = zipMatch ? zipMatch[0] : '00000';
         
-        // Fire and forget - these will populate the cache for when user opens those tabs
-        fetchInstallers(
-          stats.analysisId,
-          referencePosition.lat,
-          referencePosition.lng,
-          normalizedAddress,
-          stats.systemSizeKw,
-          stats.yearlyEnergyKwh,
-          stateCode,
-          zipCode
-        ).catch(err => console.warn('Prefetch installers failed:', err));
+        installersMutation.mutate({
+          data: {
+            analysis_id: stats.analysisId,
+            latitude: referencePosition.lat,
+            longitude: referencePosition.lng,
+            address: normalizedAddress,
+            system_size_kw: stats.systemSizeKw,
+            annual_generation_kwh: stats.yearlyEnergyKwh,
+            state: stateCode,
+            zip_code: zipCode,
+          },
+        }, { onError: (err) => console.warn('Prefetch installers failed:', err) });
         
-        fetchIncentives(
-          stats.analysisId,
-          referencePosition.lat,
-          referencePosition.lng,
-          normalizedAddress,
-          stats.systemSizeKw,
-          stats.yearlyEnergyKwh,
-          stateCode,
-          zipCode
-        ).catch(err => console.warn('Prefetch incentives failed:', err));
+        incentivesMutation.mutate({
+          data: {
+            analysis_id: stats.analysisId,
+            latitude: referencePosition.lat,
+            longitude: referencePosition.lng,
+            address: normalizedAddress,
+            system_size_kw: stats.systemSizeKw,
+            annual_generation_kwh: stats.yearlyEnergyKwh,
+            state: stateCode,
+            zip_code: zipCode,
+          },
+        }, { onError: (err) => console.warn('Prefetch incentives failed:', err) });
         
         console.log('🚀 Prefetching installers and incentives data...');
       }
@@ -382,7 +404,6 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       console.error("URJALINK analysis error:", error);
       showToast("error", "Failed to analyze roof", error instanceof Error ? error.message : "Unknown error");
     } finally {
-      setIsAnalyzing(false);
       toast.dismiss('analyzing-roof');
     }
   };

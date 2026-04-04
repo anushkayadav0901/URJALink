@@ -1,7 +1,9 @@
 import { useState, useRef } from "react";
 import { Upload, FileText, Loader2, CheckCircle, XCircle, TrendingDown, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { uploadBillForComparison, type BillComparisonResponse } from "@/lib/URJALINK-api";
+import { useBillComparisonApiV1BillComparisonPost } from "@/lib/api/hooks/useBillComparisonApiV1BillComparisonPost";
+import { apiClientConfig } from "@/lib/api-config";
+import type { BillComparisonResponse } from "@/lib/api/models/BillComparisonResponse";
 import { useToast } from "@/hooks/use-toast";
 
 interface BillComparisonUploadProps {
@@ -16,11 +18,16 @@ export function BillComparisonUpload({
   monthlySavings,
 }: BillComparisonUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [comparisonResult, setComparisonResult] = useState<BillComparisonResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Kubb-generated mutation hook
+  const billMutation = useBillComparisonApiV1BillComparisonPost({ client: apiClientConfig });
+
+  // Derived state from mutation
+  const isUploading = billMutation.isPending;
+  const comparisonResult = billMutation.data as BillComparisonResponse | undefined;
+  const error = billMutation.error ? (billMutation.error instanceof Error ? billMutation.error.message : "Failed to analyze bill") : null;
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -28,7 +35,6 @@ export function BillComparisonUpload({
 
     // Validate file type
     if (file.type !== "application/pdf") {
-      setError("Please select a PDF file");
       toast({
         title: "Invalid file type",
         description: "Only PDF files are supported",
@@ -39,7 +45,6 @@ export function BillComparisonUpload({
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError("File size too large (max 10MB)");
       toast({
         title: "File too large",
         description: "Please select a PDF file smaller than 10MB",
@@ -49,46 +54,42 @@ export function BillComparisonUpload({
     }
 
     setSelectedFile(file);
-    setError(null);
-    setComparisonResult(null);
+    billMutation.reset();
   };
 
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    setIsUploading(true);
-    setError(null);
-
-    try {
-      const result = await uploadBillForComparison(
-        selectedFile,
-        firstYearSavingsNet,
-        paybackPeriodYears,
-        monthlySavings
-      );
-
-      setComparisonResult(result);
-      toast({
-        title: "Bill analyzed successfully",
-        description: "Your before and after savings comparison is ready",
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to analyze bill";
-      setError(errorMessage);
-      toast({
-        title: "Upload failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
+    billMutation.mutate(
+      {
+        data: {
+          file: selectedFile,
+          first_year_savings_net: firstYearSavingsNet,
+          payback_period_years: paybackPeriodYears,
+          monthly_savings: monthlySavings,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Bill analyzed successfully",
+            description: "Your before and after savings comparison is ready",
+          });
+        },
+        onError: (err) => {
+          toast({
+            title: "Upload failed",
+            description: err instanceof Error ? err.message : "Failed to analyze bill",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   const handleReset = () => {
     setSelectedFile(null);
-    setComparisonResult(null);
-    setError(null);
+    billMutation.reset();
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
