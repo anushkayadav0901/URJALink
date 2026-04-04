@@ -60,13 +60,22 @@ import type { SolarStats } from "@/types/solar";
 import type { AnalysisResponse } from "@/lib/api/models/AnalysisResponse";
 
 export function formatURJALINKStats(response: AnalysisResponse): SolarStats {
-  const { roof_analysis, solar_potential, financial_outlook, solar_score, solar_score_breakdown } = response;
+  const {
+    roof_analysis,
+    solar_potential,
+    financial_outlook,
+    solar_score,
+    solar_score_breakdown,
+  } = response;
   const segment = roof_analysis.roof_segments[0];
 
   return {
     analysisId: response.analysis_id,
     location: response.location,
-    maxPanels: roof_analysis.roof_segments.reduce((sum, s) => sum + s.panel_capacity, 0),
+    maxPanels: roof_analysis.roof_segments.reduce(
+      (sum, s) => sum + s.panel_capacity,
+      0,
+    ),
     roofAreaSqft: Math.round(roof_analysis.total_area_sqft),
     usableAreaSqft: roof_analysis.usable_area_sqft,
     systemSizeKw: solar_potential.system_size_kw,

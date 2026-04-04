@@ -4,7 +4,10 @@ import { Layers, Pencil, Trash2, Undo2, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Point, calculatePolygonArea } from "@/lib/roof-detection";
-import { URJALINKPolygonToGoogleMaps, formatURJALINKStats } from "@/lib/URJALINK-api";
+import {
+  URJALINKPolygonToGoogleMaps,
+  formatURJALINKStats,
+} from "@/lib/URJALINK-api";
 import { useAnalyzeApiV1AnalyzePost } from "@/lib/api/hooks/useAnalyzeApiV1AnalyzePost";
 import { useAgentsInstallersApiV1AgentsInstallersPost } from "@/lib/api/hooks/useAgentsInstallersApiV1AgentsInstallersPost";
 import { useAgentsIncentivesApiV1AgentsIncentivesPost } from "@/lib/api/hooks/useAgentsIncentivesApiV1AgentsIncentivesPost";
@@ -38,7 +41,7 @@ const getPolygonCentroid = (points: CoordinatePoint[]): CoordinatePoint => {
       lat: acc.lat + point.lat,
       lng: acc.lng + point.lng,
     }),
-    { lat: 0, lng: 0 }
+    { lat: 0, lng: 0 },
   );
 
   return {
@@ -57,27 +60,48 @@ const extractStateCode = (address: string): string | null => {
 interface FullscreenMapProps {
   selectedPlaceId: string | null;
   selectedAddress: string | null;
-  onAnalyze: (data: { address: string; coordinates: CoordinatePoint[] }) => void;
+  onAnalyze: (data: {
+    address: string;
+    coordinates: CoordinatePoint[];
+  }) => void;
 }
 
-export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: FullscreenMapProps) => {
+export const FullscreenMap = ({
+  selectedPlaceId,
+  selectedAddress,
+  onAnalyze,
+}: FullscreenMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [center, setCenter] = useState({ lat: 28.6139, lng: 77.2090 });
-  const [markerPosition, setMarkerPosition] = useState<CoordinatePoint | null>(null);
-  const [mapTypeId, setMapTypeId] = useState<"roadmap" | "satellite" | "hybrid">("hybrid");
-  const [roofPolygon, setRoofPolygon] = useState<CoordinatePoint[] | null>(null);
+  const [center, setCenter] = useState({ lat: 28.6139, lng: 77.209 });
+  const [markerPosition, setMarkerPosition] = useState<CoordinatePoint | null>(
+    null,
+  );
+  const [mapTypeId, setMapTypeId] = useState<
+    "roadmap" | "satellite" | "hybrid"
+  >("hybrid");
+  const [roofPolygon, setRoofPolygon] = useState<CoordinatePoint[] | null>(
+    null,
+  );
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawingPoints, setDrawingPoints] = useState<CoordinatePoint[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<SolarStats | null>(null);
+  const [analysisResults, setAnalysisResults] = useState<SolarStats | null>(
+    null,
+  );
   const [showTutorial, setShowTutorial] = useState(false);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
 
   // Kubb-generated mutation hooks
-  const analyzeMutation = useAnalyzeApiV1AnalyzePost({ client: apiClientConfig });
-  const installersMutation = useAgentsInstallersApiV1AgentsInstallersPost({ client: apiClientConfig });
-  const incentivesMutation = useAgentsIncentivesApiV1AgentsIncentivesPost({ client: apiClientConfig });
+  const analyzeMutation = useAnalyzeApiV1AnalyzePost({
+    client: apiClientConfig,
+  });
+  const installersMutation = useAgentsInstallersApiV1AgentsInstallersPost({
+    client: apiClientConfig,
+  });
+  const incentivesMutation = useAgentsIncentivesApiV1AgentsIncentivesPost({
+    client: apiClientConfig,
+  });
   const isAnalyzing = analyzeMutation.isPending;
 
   const mapOptions = {
@@ -89,13 +113,16 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
     mapTypeId: mapTypeId,
     gestureHandling: isDrawing ? "none" : "greedy", // Disable pan/zoom while drawing
     tilt: 0,
-    styles: mapTypeId === "roadmap" ? [
-      {
-        featureType: "poi",
-        elementType: "labels",
-        stylers: [{ visibility: "off" }],
-      },
-    ] : undefined,
+    styles:
+      mapTypeId === "roadmap"
+        ? [
+            {
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }],
+            },
+          ]
+        : undefined,
   };
 
   type ToastVariant = "success" | "info" | "error";
@@ -106,7 +133,12 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
     error: toast.error,
   } as const;
 
-  const showToast = (variant: ToastVariant, title: string, description?: string, id?: string) => {
+  const showToast = (
+    variant: ToastVariant,
+    title: string,
+    description?: string,
+    id?: string,
+  ) => {
     const toastId = id ?? `${variant}-${Date.now()}`;
     toastFnMap[variant](title, {
       id: toastId,
@@ -126,11 +158,13 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
     const fetchPlaceDetails = async () => {
       try {
         // Use the new Place class (Places API New)
-        const { Place } = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+        const { Place } = (await window.google.maps.importLibrary(
+          "places",
+        )) as google.maps.PlacesLibrary;
         const place = new Place({ id: selectedPlaceId });
-        
+
         await place.fetchFields({ fields: ["location", "formattedAddress"] });
-        
+
         if (place.location) {
           const location = {
             lat: place.location.lat(),
@@ -138,24 +172,28 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
           };
           setCenter(location);
           setMarkerPosition(location);
-          
+
           // Smooth zoom and pan to the location
           map?.panTo(location);
-          
+
           // Zoom in very close to see roof details
           setTimeout(() => {
             map?.setZoom(21);
           }, 300);
-          
+
           // Switch to hybrid view (satellite + labels)
           setMapTypeId("hybrid");
-          
-          console.log("📍 Zoomed to address:", place.formattedAddress, "at zoom level 21");
-          
+
+          console.log(
+            "📍 Zoomed to address:",
+            place.formattedAddress,
+            "at zoom level 21",
+          );
+
           if (place.formattedAddress) {
             setResolvedAddress(place.formattedAddress);
           }
-          
+
           // Show tutorial card
           setShowTutorial(true);
         }
@@ -183,13 +221,15 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
     return geocoderRef.current;
   };
 
-  const reverseGeocode = async (location: CoordinatePoint): Promise<string | null> => {
+  const reverseGeocode = async (
+    location: CoordinatePoint,
+  ): Promise<string | null> => {
     const geocoder = getGeocoder();
     if (!geocoder) {
       return null;
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       geocoder.geocode({ location }, (results, status) => {
         if (status === "OK" && results && results[0]?.formatted_address) {
           resolve(results[0].formatted_address);
@@ -207,15 +247,15 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
 
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     if (!isDrawing || !e.latLng) return;
-    
+
     const point = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     };
-    
+
     const updatedPoints = [...drawingPoints, point];
     setDrawingPoints(updatedPoints);
-    
+
     // Auto-complete after 4 points
     if (updatedPoints.length === 4) {
       const centroid = getPolygonCentroid(updatedPoints);
@@ -226,18 +266,22 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
 
       const area = calculatePolygonArea(updatedPoints);
       const areaSqFt = (area * 10.7639).toFixed(2);
-      showToast("success", "Roof outline complete!", `Area: ${areaSqFt} sq ft (${area.toFixed(2)} m²)`);
-      
+      showToast(
+        "success",
+        "Roof outline complete!",
+        `Area: ${areaSqFt} sq ft (${area.toFixed(2)} m²)`,
+      );
+
       console.log("✅ Roof drawn:", {
         points: updatedPoints.length,
-        area: `${areaSqFt} sq ft`
+        area: `${areaSqFt} sq ft`,
       });
     }
   };
 
   const undoLastPoint = () => {
     if (drawingPoints.length === 0) return;
-    
+
     const newPoints = drawingPoints.slice(0, -1);
     setDrawingPoints(newPoints);
     showToast("info", "Point removed", `${newPoints.length}/4 points selected`);
@@ -250,7 +294,11 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
     setAnalysisResults(null);
     setShowResults(false);
     setResolvedAddress(null);
-    showToast("success", "Drawing mode activated", "Click 4 corners of the roof to outline it");
+    showToast(
+      "success",
+      "Drawing mode activated",
+      "Click 4 corners of the roof to outline it",
+    );
   };
 
   const cancelDrawing = () => {
@@ -283,8 +331,8 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       setMarkerPosition(referencePosition);
     }
 
-    const toastId = 'analyzing-roof';
-    
+    const toastId = "analyzing-roof";
+
     try {
       let addressToUse = resolvedAddress ?? null;
       if (!addressToUse && referencePosition) {
@@ -293,7 +341,8 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       if (!addressToUse && selectedAddress) {
         addressToUse = selectedAddress;
       }
-      const fallbackAddress = addressToUse || formatCoordinateLabel(referencePosition);
+      const fallbackAddress =
+        addressToUse || formatCoordinateLabel(referencePosition);
 
       // Determine analysis method
       const method = usingUserPolygon ? "user-drawn polygon" : "AI detection";
@@ -331,9 +380,10 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       });
 
       // Extract polygon from roof segments (first segment contains the main polygon)
-      const polygonCoords = result.roof_analysis.roof_segments[0]?.polygon?.coordinates || [];
+      const polygonCoords =
+        result.roof_analysis.roof_segments[0]?.polygon?.coordinates || [];
       const polygon = URJALINKPolygonToGoogleMaps(polygonCoords);
-      
+
       // Format stats for display
       const stats = formatURJALINKStats(result);
       const normalizedAddress = result.location?.address || fallbackAddress;
@@ -343,17 +393,17 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
       setRoofPolygon(polygon);
 
       // Success toast with stats
-      toast.dismiss('analyzing-roof');
+      toast.dismiss("analyzing-roof");
       showToast(
         "success",
         "✅ Analysis complete!",
-        `${stats.maxPanels} panels • ${stats.roofAreaSqft.toLocaleString()} sqft • ${stats.confidence}% confidence • ${usingUserPolygon ? 'User-defined' : 'AI-detected'}`
+        `${stats.maxPanels} panels • ${stats.roofAreaSqft.toLocaleString()} sqft • ${stats.confidence}% confidence • ${usingUserPolygon ? "User-defined" : "AI-detected"}`,
       );
 
       // Store results and show panel
       setAnalysisResults(stats);
       setShowResults(true);
-      
+
       // Pass to parent
       onAnalyze({
         address: normalizedAddress,
@@ -362,61 +412,79 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
 
       // Prefetch installers and incentives data asynchronously (fire and forget)
       if (stats.analysisId && stateCode) {
-        const zipCode = zipMatch ? zipMatch[0] : '00000';
-        
-        installersMutation.mutate({
-          data: {
-            analysis_id: stats.analysisId,
-            latitude: referencePosition.lat,
-            longitude: referencePosition.lng,
-            address: normalizedAddress,
-            system_size_kw: stats.systemSizeKw,
-            annual_generation_kwh: stats.yearlyEnergyKwh,
-            state: stateCode,
-            zip_code: zipCode,
+        const zipCode = zipMatch ? zipMatch[0] : "00000";
+
+        installersMutation.mutate(
+          {
+            data: {
+              analysis_id: stats.analysisId,
+              latitude: referencePosition.lat,
+              longitude: referencePosition.lng,
+              address: normalizedAddress,
+              system_size_kw: stats.systemSizeKw,
+              annual_generation_kwh: stats.yearlyEnergyKwh,
+              state: stateCode,
+              zip_code: zipCode,
+            },
           },
-        }, { onError: (err) => console.warn('Prefetch installers failed:', err) });
-        
-        incentivesMutation.mutate({
-          data: {
-            analysis_id: stats.analysisId,
-            latitude: referencePosition.lat,
-            longitude: referencePosition.lng,
-            address: normalizedAddress,
-            system_size_kw: stats.systemSizeKw,
-            annual_generation_kwh: stats.yearlyEnergyKwh,
-            state: stateCode,
-            zip_code: zipCode,
+          {
+            onError: (err) => console.warn("Prefetch installers failed:", err),
           },
-        }, { onError: (err) => console.warn('Prefetch incentives failed:', err) });
-        
-        console.log('🚀 Prefetching installers and incentives data...');
+        );
+
+        incentivesMutation.mutate(
+          {
+            data: {
+              analysis_id: stats.analysisId,
+              latitude: referencePosition.lat,
+              longitude: referencePosition.lng,
+              address: normalizedAddress,
+              system_size_kw: stats.systemSizeKw,
+              annual_generation_kwh: stats.yearlyEnergyKwh,
+              state: stateCode,
+              zip_code: zipCode,
+            },
+          },
+          {
+            onError: (err) => console.warn("Prefetch incentives failed:", err),
+          },
+        );
+
+        console.log("🚀 Prefetching installers and incentives data...");
       }
 
       // Log full stats for debugging
       console.log("URJALINK Analysis Results:", {
         roof: result.roof_analysis,
         solar: result.solar_potential,
-        stats: stats
+        stats: stats,
       });
-
     } catch (error) {
       console.error("URJALINK analysis error:", error);
-      showToast("error", "Failed to analyze roof", error instanceof Error ? error.message : "Unknown error");
+      showToast(
+        "error",
+        "Failed to analyze roof",
+        error instanceof Error ? error.message : "Unknown error",
+      );
     } finally {
-      toast.dismiss('analyzing-roof');
+      toast.dismiss("analyzing-roof");
     }
   };
 
   const toggleMapType = () => {
-    setMapTypeId(prev => {
-      const types: ("roadmap" | "satellite" | "hybrid")[] = ["roadmap", "satellite", "hybrid"];
+    setMapTypeId((prev) => {
+      const types: ("roadmap" | "satellite" | "hybrid")[] = [
+        "roadmap",
+        "satellite",
+        "hybrid",
+      ];
       const currentIndex = types.indexOf(prev);
       return types[(currentIndex + 1) % types.length];
     });
   };
 
-  const overlayAddress = resolvedAddress || selectedAddress || formatCoordinateLabel(markerPosition);
+  const overlayAddress =
+    resolvedAddress || selectedAddress || formatCoordinateLabel(markerPosition);
 
   return (
     <div className="relative w-full h-full">
@@ -441,7 +509,7 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             }}
           />
         )}
-        
+
         {/* Drawing in progress - show polyline */}
         {isDrawing && drawingPoints.length > 0 && (
           <>
@@ -470,7 +538,7 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             ))}
           </>
         )}
-        
+
         {/* Completed roof polygon */}
         {roofPolygon && !isDrawing && (
           <Polygon
@@ -520,13 +588,15 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             onClick={analyzeRoofWithAI}
             disabled={isAnalyzing}
             className={`backdrop-blur-xl rounded-xl border shadow-card p-3 transition-all hover:scale-105 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500 hover:from-green-500/30 hover:to-emerald-500/30 ${
-              isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''
+              isAnalyzing ? "opacity-50 cursor-not-allowed" : ""
             }`}
             title="Analyze your drawn roof"
           >
-            <Sparkles className={`w-5 h-5 text-green-400 ${isAnalyzing ? 'animate-spin' : ''}`} />
+            <Sparkles
+              className={`w-5 h-5 text-green-400 ${isAnalyzing ? "animate-spin" : ""}`}
+            />
             <span className="text-sm font-medium text-green-300">
-              {isAnalyzing ? 'Analyzing...' : '✨ Analyze Drawn Roof'}
+              {isAnalyzing ? "Analyzing..." : "✨ Analyze Drawn Roof"}
             </span>
           </button>
         )}
@@ -542,7 +612,7 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             <span className="text-sm font-medium">Draw Roof</span>
           </button>
         )}
-        
+
         {isDrawing && (
           <div className="flex flex-col gap-2">
             {drawingPoints.length > 0 && (
@@ -565,7 +635,7 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             </button>
           </div>
         )}
-        
+
         {roofPolygon && !isDrawing && (
           <div className="flex flex-col gap-2">
             <button
@@ -586,7 +656,7 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
             </button>
           </div>
         )}
-        
+
         {/* Map type toggle */}
         <button
           onClick={toggleMapType}
@@ -617,14 +687,18 @@ export const FullscreenMap = ({ selectedPlaceId, selectedAddress, onAnalyze }: F
               >
                 <X className="w-3.5 h-3.5 text-gray-700" />
               </button>
-              
+
               <div className="flex items-center gap-3 text-white">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                   <Pencil className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold mb-0.5">👇 Click "Draw Roof" to start</p>
-                  <p className="text-xs opacity-90">Outline your building for accurate analysis</p>
+                  <p className="text-sm font-semibold mb-0.5">
+                    👇 Click "Draw Roof" to start
+                  </p>
+                  <p className="text-xs opacity-90">
+                    Outline your building for accurate analysis
+                  </p>
                 </div>
               </div>
             </div>

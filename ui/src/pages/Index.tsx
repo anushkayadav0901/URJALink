@@ -44,18 +44,22 @@ const Index = () => {
     setSelectedAddress(description);
   };
 
-  const handleAnalyze = (data: { address: string; coordinates: CoordinatePoint[] }) => {
+  const handleAnalyze = (data: {
+    address: string;
+    coordinates: CoordinatePoint[];
+  }) => {
     const validation = analysisDataSchema.safeParse(data);
-    
+
     if (!validation.success) {
       toast.error("Invalid data. Please try again.");
       return;
     }
 
-    const validatedCoordinates: CoordinatePoint[] = validation.data.coordinates.map(coord => ({
-      lat: coord.lat,
-      lng: coord.lng,
-    }));
+    const validatedCoordinates: CoordinatePoint[] =
+      validation.data.coordinates.map((coord) => ({
+        lat: coord.lat,
+        lng: coord.lng,
+      }));
 
     const analysisData = {
       address: validation.data.address,
@@ -63,7 +67,7 @@ const Index = () => {
       area: calculatePolygonArea(validatedCoordinates),
       timestamp: new Date().toISOString(),
     };
-    
+
     // Log sanitized data (no sensitive info)
     console.log("Analysis started:", {
       addressLength: analysisData.address.length,
@@ -74,16 +78,16 @@ const Index = () => {
 
   const calculatePolygonArea = (coordinates: CoordinatePoint[]): number => {
     if (coordinates.length < 3) return 0;
-    
+
     let area = 0;
     const n = coordinates.length;
-    
+
     for (let i = 0; i < n; i++) {
       const j = (i + 1) % n;
       area += coordinates[i].lng * coordinates[j].lat;
       area -= coordinates[j].lng * coordinates[i].lat;
     }
-    
+
     return Math.abs(area / 2) * 111000 * 111000;
   };
 
@@ -103,7 +107,7 @@ const Index = () => {
     >
       <div className="h-screen flex flex-col overflow-hidden bg-background">
         <Header />
-        
+
         {/* Search overlay */}
         <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 animate-fade-in">
           <MapSearch onPlaceSelect={handlePlaceSelect} />

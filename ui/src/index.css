@@ -19,7 +19,7 @@ All colors MUST be HSL.
 
     --primary: 32 98% 55%;
     --primary-foreground: 0 0% 100%;
-    
+
     --primary-glow: 38 100% 65%;
     --primary-dark: 28 90% 48%;
 
@@ -40,19 +40,31 @@ All colors MUST be HSL.
     --ring: 32 98% 55%;
 
     --radius: 0.75rem;
-    
+
     /* Solar theme custom tokens */
-    --gradient-solar: linear-gradient(135deg, hsl(32 98% 55%) 0%, hsl(45 100% 60%) 100%);
-    --gradient-energy: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(200 100% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 20% 98%) 0%, hsl(210 40% 96%) 100%);
-    
+    --gradient-solar: linear-gradient(
+      135deg,
+      hsl(32 98% 55%) 0%,
+      hsl(45 100% 60%) 100%
+    );
+    --gradient-energy: linear-gradient(
+      135deg,
+      hsl(210 100% 50%) 0%,
+      hsl(200 100% 55%) 100%
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(220 20% 98%) 0%,
+      hsl(210 40% 96%) 100%
+    );
+
     --shadow-solar: 0 10px 40px -10px hsl(32 98% 55% / 0.3);
     --shadow-glow: 0 0 30px hsl(32 98% 55% / 0.2);
     --shadow-card: 0 4px 20px -2px hsl(220 15% 20% / 0.1);
-    
+
     --glass-bg: hsl(0 0% 100% / 0.8);
     --glass-border: hsl(0 0% 100% / 0.3);
-    
+
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
@@ -85,7 +97,7 @@ All colors MUST be HSL.
 
     --primary: 32 98% 55%;
     --primary-foreground: 0 0% 100%;
-    
+
     --primary-glow: 38 100% 65%;
     --primary-dark: 28 90% 48%;
 
@@ -104,15 +116,27 @@ All colors MUST be HSL.
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 32 98% 55%;
-    
-    --gradient-solar: linear-gradient(135deg, hsl(32 98% 55%) 0%, hsl(45 100% 60%) 100%);
-    --gradient-energy: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(200 100% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(217 33% 12%) 100%);
-    
+
+    --gradient-solar: linear-gradient(
+      135deg,
+      hsl(32 98% 55%) 0%,
+      hsl(45 100% 60%) 100%
+    );
+    --gradient-energy: linear-gradient(
+      135deg,
+      hsl(210 100% 50%) 0%,
+      hsl(200 100% 55%) 100%
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(222 47% 8%) 0%,
+      hsl(217 33% 12%) 100%
+    );
+
     --shadow-solar: 0 10px 40px -10px hsl(32 98% 55% / 0.4);
     --shadow-glow: 0 0 30px hsl(32 98% 55% / 0.3);
     --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.5);
-    
+
     --glass-bg: hsl(222 45% 11% / 0.8);
     --glass-border: hsl(0 0% 100% / 0.1);
     --sidebar-background: 240 5.9% 10%;
@@ -134,124 +158,124 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Beautiful Markdown Prose Styling */
   .prose {
     @apply max-w-none;
   }
-  
+
   .prose h1 {
     @apply text-2xl font-bold mb-4 mt-6 pb-2 border-b border-white/20;
   }
-  
+
   .prose h2 {
     @apply text-xl font-bold mb-3 mt-5 pb-2 border-b border-white/10;
   }
-  
+
   .prose h3 {
     @apply text-lg font-semibold mb-2 mt-4;
   }
-  
+
   .prose h4 {
     @apply text-base font-semibold mb-2 mt-3;
   }
-  
+
   .prose p {
     @apply mb-3 leading-relaxed;
   }
-  
+
   .prose strong {
     @apply font-semibold;
   }
-  
+
   .prose ul {
     @apply list-disc list-inside mb-3 space-y-1.5 ml-2;
   }
-  
+
   .prose ol {
     @apply list-decimal list-inside mb-3 space-y-1.5 ml-2;
   }
-  
+
   .prose li {
     @apply mb-1 leading-relaxed;
   }
-  
+
   .prose a {
     @apply underline underline-offset-2 transition-colors hover:opacity-80;
   }
-  
+
   .prose table {
     @apply w-full border-collapse mb-4 text-sm;
   }
-  
+
   .prose thead {
     @apply border-b-2;
   }
-  
+
   .prose th {
     @apply border border-white/30 bg-white/10 px-3 py-2.5 text-left font-semibold;
   }
-  
+
   .prose td {
     @apply border border-white/20 px-3 py-2;
   }
-  
+
   .prose tbody tr:hover {
     @apply bg-white/5;
   }
-  
+
   .prose code {
     @apply bg-white/10 rounded px-1.5 py-0.5 text-sm font-mono;
   }
-  
+
   .prose pre {
     @apply bg-white/5 rounded-lg p-4 mb-4 overflow-x-auto;
   }
-  
+
   .prose pre code {
     @apply bg-transparent p-0;
   }
-  
+
   .prose hr {
     @apply border-white/20 my-6;
   }
-  
+
   .prose blockquote {
     @apply border-l-4 border-white/30 pl-4 italic my-4;
   }
-  
+
   /* Inverted prose for dark backgrounds */
   .prose-invert {
     @apply text-white/90;
   }
-  
+
   .prose-invert h1,
   .prose-invert h2,
   .prose-invert h3,
   .prose-invert h4 {
     @apply text-white;
   }
-  
+
   .prose-invert strong {
     @apply text-white font-semibold;
   }
-  
+
   .prose-invert a {
     @apply text-blue-300 hover:text-blue-200;
   }
-  
+
   .prose-invert code {
     @apply text-blue-200 bg-white/10;
   }
-  
+
   .prose-invert th {
     @apply text-white bg-white/10;
   }
-  
+
   .prose-invert td {
     @apply text-white/85;
   }
-  
+
   .prose-invert blockquote {
     @apply text-white/80 border-white/30;
   }

@@ -29,4 +29,3 @@ export interface SolarStats {
   solarScoreBreakdown?: SolarScoreBreakdown;
   fullResponse: AnalysisResponse;
 }
-

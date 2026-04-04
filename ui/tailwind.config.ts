@@ -4,7 +4,12 @@ import typography from "@tailwindcss/typography";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -72,14 +77,14 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       backgroundImage: {
-        'gradient-solar': 'var(--gradient-solar)',
-        'gradient-energy': 'var(--gradient-energy)',
-        'gradient-hero': 'var(--gradient-hero)',
+        "gradient-solar": "var(--gradient-solar)",
+        "gradient-energy": "var(--gradient-energy)",
+        "gradient-hero": "var(--gradient-hero)",
       },
       boxShadow: {
-        'solar': 'var(--shadow-solar)',
-        'glow': 'var(--shadow-glow)',
-        'card': 'var(--shadow-card)',
+        solar: "var(--shadow-solar)",
+        glow: "var(--shadow-glow)",
+        card: "var(--shadow-card)",
       },
       keyframes: {
         "accordion-down": {
@@ -111,8 +116,8 @@ export default {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
       transitionProperty: {
-        'smooth': 'var(--transition-smooth)',
-        'spring': 'var(--transition-spring)',
+        smooth: "var(--transition-smooth)",
+        spring: "var(--transition-spring)",
       },
     },
   },

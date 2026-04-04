@@ -17,7 +17,7 @@ const buildDynamicVariables = (
   address: string,
   solarData: Record<string, any>,
   incentive: string,
-  installerData: string
+  installerData: string,
 ) => {
   const solarDataStr = `System Size: ${solarData.systemSizeKw || 0}kW, Max Panels: ${solarData.maxPanels || 0}, Annual Energy: ${solarData.yearlyEnergyKwh || 0}kWh, Daily Energy: ${solarData.dailyEnergyKwh || 0}kWh, Usable Roof Area: ${solarData.usableAreaSqft || 0}sqft, Total Roof Area: ${solarData.roofAreaSqft || 0}sqft, System Cost: $${solarData.systemCost || 0}, Annual Savings: $${solarData.annualSavings || 0}, Payback Years: ${solarData.paybackYears || 0}, ROI: ${solarData.roi || 0}%, Carbon Offset: ${solarData.carbonOffset || 0}kg/year, Trees Equivalent: ${solarData.treesEquivalent || 0}, Solar Score: ${solarData.solarScore || 0}, Confidence: ${solarData.confidence || 0}%, Analysis Type: ${solarData.analysisType || "unknown"}, Orientation: ${solarData.orientation || "unknown"}`;
 
@@ -29,14 +29,19 @@ const buildDynamicVariables = (
   });
 };
 
-export const VoiceWidget = ({ address, solarData, incentive, installerData }: VoiceWidgetProps) => {
+export const VoiceWidget = ({
+  address,
+  solarData,
+  incentive,
+  installerData,
+}: VoiceWidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<ElevenLabsWidgetElement | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const dynamicVariables = useMemo(
     () => buildDynamicVariables(address, solarData, incentive, installerData),
-    [address, solarData, incentive, installerData]
+    [address, solarData, incentive, installerData],
   );
 
   // Load ElevenLabs script
@@ -47,8 +52,10 @@ export const VoiceWidget = ({ address, solarData, incentive, installerData }: Vo
       return;
     }
 
-    const existingScript = document.querySelector('script[src="https://unpkg.com/@elevenlabs/convai-widget-embed"]');
-    
+    const existingScript = document.querySelector(
+      'script[src="https://unpkg.com/@elevenlabs/convai-widget-embed"]',
+    );
+
     if (existingScript) {
       // Script exists but element not registered yet, wait for load
       existingScript.addEventListener("load", () => setScriptLoaded(true));
@@ -77,7 +84,9 @@ export const VoiceWidget = ({ address, solarData, incentive, installerData }: Vo
       return;
     }
 
-    const widgetEl = document.createElement("elevenlabs-convai") as ElevenLabsWidgetElement;
+    const widgetEl = document.createElement(
+      "elevenlabs-convai",
+    ) as ElevenLabsWidgetElement;
     widgetEl.setAttribute("agent-id", AGENT_ID);
     widgetEl.setAttribute("variant", "full");
     widgetEl.setAttribute("placement", "bottom-right");

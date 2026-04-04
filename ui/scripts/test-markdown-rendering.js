@@ -1,14 +1,14 @@
 /**
  * Markdown Rendering Test Script
- * 
+ *
  * Tests the normalizeMarkdown function with dummy data
  * and renders the output to HTML for visual inspection
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { marked } from 'marked';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { marked } from "marked";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,43 +17,43 @@ const __dirname = path.dirname(__filename);
 // Keep it simple - only fix essential issues to avoid breaking valid markdown
 const normalizeMarkdown = (markdown) => {
   if (!markdown) return "";
-  
+
   let normalized = markdown
     // Convert literal \n strings to actual newlines (API may send escaped newlines)
     .replace(/\\n/g, "\n")
     // Normalize line endings
     .replace(/\r\n/g, "\n")
-    
+
     // Fix table separators that are too long (normalize to reasonable length)
-    .replace(/\|[-]{100,}\|/g, '|---|---|---|---|---|---|---|')
-    
+    .replace(/\|[-]{100,}\|/g, "|---|---|---|---|---|---|---|")
+
     // Clean up excessive blank lines (more than 2)
-    .replace(/\n{3,}/g, '\n\n')
-    
+    .replace(/\n{3,}/g, "\n\n")
+
     // Trim
     .trim();
-  
+
   // Fix malformed table separators (e.g., "-----||" -> "|--------|--------|...")
   // Process line by line to fix separators
-  const lines = normalized.split('\n');
+  const lines = normalized.split("\n");
   const fixedLines = lines.map((line, index) => {
     // Check if this line is a malformed separator (dashes with no/incorrect pipes)
     if (/^[-]{3,}\|{0,2}$/.test(line)) {
       // Find the previous line (header row)
-      const prevLine = index > 0 ? lines[index - 1] : '';
-      if (prevLine && prevLine.includes('|')) {
+      const prevLine = index > 0 ? lines[index - 1] : "";
+      if (prevLine && prevLine.includes("|")) {
         // Count columns in header row (split by | and filter empty cells)
-        const cells = prevLine.split('|').filter(cell => cell.trim() !== '');
+        const cells = prevLine.split("|").filter((cell) => cell.trim() !== "");
         const columnCount = cells.length;
         if (columnCount > 0) {
-          return '|' + Array(columnCount).fill('--------').join('|') + '|';
+          return "|" + Array(columnCount).fill("--------").join("|") + "|";
         }
       }
     }
     return line;
   });
-  
-  return fixedLines.join('\n');
+
+  return fixedLines.join("\n");
 };
 
 // Dummy markdown data - simulating what the API returns
@@ -63,45 +63,53 @@ const dummyInstallersMarkdown = `| Company Name | Contact Info + Website | Revie
 const dummyIncentivesMarkdown = `### Federal Investment Tax Credit\\n- **Type:** Federal\\n- **Value:** 30% of installation cost\\n- **Eligibility:** Available for residential solar installations up to a certain limit; must be used for qualified solar equipment.\\n\\n### Massachusetts Smart (Solar Massachusetts Renewable Target) Program\\n- **Type:** State\\n- **Value:** Up to $1,000\\n- **Eligibility:** Must be a participant in the program; financial incentives tied to approved solar installations.\\n\\n### Massachusetts Sales Tax Exemption\\n- **Type:** State\\n- **Value:** 100% exemption\\n- **Eligibility:** No sales tax applies to solar panel installations; must meet specific criteria for renewable energy systems.`;
 
 function analyzeMarkdown(name, rawMarkdown) {
-  console.log(`\n${'='.repeat(80)}`);
+  console.log(`\n${"=".repeat(80)}`);
   console.log(`ANALYZING: ${name}`);
-  console.log('='.repeat(80));
-  
+  console.log("=".repeat(80));
+
   console.log(`\n📊 Raw Markdown Statistics:`);
   console.log(`  Length: ${rawMarkdown.length} characters`);
-  console.log(`  Literal \\n count: ${(rawMarkdown.match(/\\n/g) || []).length}`);
+  console.log(
+    `  Literal \\n count: ${(rawMarkdown.match(/\\n/g) || []).length}`,
+  );
   console.log(`  Actual newlines: ${(rawMarkdown.match(/\n/g) || []).length}`);
-  console.log(`  Lines: ${rawMarkdown.split('\n').length}`);
-  
+  console.log(`  Lines: ${rawMarkdown.split("\n").length}`);
+
   console.log(`\n📝 Raw Markdown (first 500 chars):`);
-  console.log(rawMarkdown.substring(0, 500) + (rawMarkdown.length > 500 ? '...' : ''));
-  
+  console.log(
+    rawMarkdown.substring(0, 500) + (rawMarkdown.length > 500 ? "..." : ""),
+  );
+
   // Apply normalization
   const normalized = normalizeMarkdown(rawMarkdown);
-  
+
   console.log(`\n📊 Normalized Markdown Statistics:`);
   console.log(`  Length: ${normalized.length} characters`);
   console.log(`  Newlines: ${(normalized.match(/\n/g) || []).length}`);
-  console.log(`  Lines: ${normalized.split('\n').length}`);
-  console.log(`  Headers (###): ${(normalized.match(/^#{1,6}\s/gm) || []).length}`);
+  console.log(`  Lines: ${normalized.split("\n").length}`);
+  console.log(
+    `  Headers (###): ${(normalized.match(/^#{1,6}\s/gm) || []).length}`,
+  );
   console.log(`  Lists (-): ${(normalized.match(/^[-*+]\s/gm) || []).length}`);
   console.log(`  Tables (|): ${(normalized.match(/\|/g) || []).length}`);
   console.log(`  Table rows: ${(normalized.match(/^\|.+\|$/gm) || []).length}`);
-  
+
   console.log(`\n📝 Normalized Markdown (first 500 chars):`);
-  console.log(normalized.substring(0, 500) + (normalized.length > 500 ? '...' : ''));
-  
+  console.log(
+    normalized.substring(0, 500) + (normalized.length > 500 ? "..." : ""),
+  );
+
   // Try to render with marked
-  let htmlOutput = '';
+  let htmlOutput = "";
   let renderError = null;
-  
+
   try {
     // Configure marked for GitHub Flavored Markdown
     marked.setOptions({
       gfm: true,
       breaks: false,
     });
-    
+
     htmlOutput = marked(normalized);
     console.log(`\n✅ Markdown rendered successfully!`);
     console.log(`  HTML length: ${htmlOutput.length} characters`);
@@ -110,14 +118,17 @@ function analyzeMarkdown(name, rawMarkdown) {
     console.log(`\n❌ Error rendering markdown: ${error.message}`);
     console.error(error);
   }
-  
+
   // Save to HTML file for visual inspection
-  const outputDir = path.join(__dirname, '..', 'test-output');
+  const outputDir = path.join(__dirname, "..", "test-output");
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
-  
-  const htmlPath = path.join(outputDir, `test-${name.toLowerCase().replace(/\s/g, '-')}.html`);
+
+  const htmlPath = path.join(
+    outputDir,
+    `test-${name.toLowerCase().replace(/\s/g, "-")}.html`,
+  );
   const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -287,39 +298,40 @@ function analyzeMarkdown(name, rawMarkdown) {
         
         <div class="section">
             <h2>📝 Raw Markdown (as received from API)</h2>
-            <div class="raw-content">${rawMarkdown.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div class="raw-content">${rawMarkdown.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
         </div>
         
         <div class="section">
             <h2>🔧 Normalized Markdown (after processing)</h2>
-            <div class="normalized-content">${normalized.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div class="normalized-content">${normalized.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
         </div>
         
         <div class="section">
             <h2>🎨 Rendered Output</h2>
-            ${renderError ? `<div class="error"><strong>Error:</strong> ${renderError.message}</div>` : ''}
-            <div class="rendered-content">${htmlOutput || '<p>No output generated</p>'}</div>
+            ${renderError ? `<div class="error"><strong>Error:</strong> ${renderError.message}</div>` : ""}
+            <div class="rendered-content">${htmlOutput || "<p>No output generated</p>"}</div>
         </div>
     </div>
 </body>
 </html>`;
-  
+
   fs.writeFileSync(htmlPath, htmlContent);
   console.log(`\n💾 HTML output saved to: ${htmlPath}`);
-  console.log(`   Open this file in your browser to see the rendered markdown\n`);
-  
+  console.log(
+    `   Open this file in your browser to see the rendered markdown\n`,
+  );
+
   return { rawMarkdown, normalized, htmlOutput, renderError };
 }
 
 // Run tests
-console.log('\n🧪 Starting Markdown Rendering Tests...\n');
+console.log("\n🧪 Starting Markdown Rendering Tests...\n");
 
-const installersResult = analyzeMarkdown('Installers', dummyInstallersMarkdown);
-const incentivesResult = analyzeMarkdown('Incentives', dummyIncentivesMarkdown);
+const installersResult = analyzeMarkdown("Installers", dummyInstallersMarkdown);
+const incentivesResult = analyzeMarkdown("Incentives", dummyIncentivesMarkdown);
 
-console.log('\n' + '='.repeat(80));
-console.log('✅ Tests Complete!');
-console.log('='.repeat(80));
-console.log('\n📁 Check the test-output/ directory for HTML files');
-console.log('   Open them in your browser to see the rendered markdown\n');
-
+console.log("\n" + "=".repeat(80));
+console.log("✅ Tests Complete!");
+console.log("=".repeat(80));
+console.log("\n📁 Check the test-output/ directory for HTML files");
+console.log("   Open them in your browser to see the rendered markdown\n");

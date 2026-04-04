@@ -29,7 +29,9 @@ try {
 
 const key = process.env.VITE_GOOGLE_MAPS_API_KEY;
 if (!key) {
-  console.error("VITE_GOOGLE_MAPS_API_KEY is not set. Add it to .env or set the env var.");
+  console.error(
+    "VITE_GOOGLE_MAPS_API_KEY is not set. Add it to .env or set the env var.",
+  );
   process.exit(1);
 }
 
@@ -58,18 +60,32 @@ async function run() {
       console.error("Maps API returned an error indicator:", found);
       // print a small snippet to help debug
       const idx = body.indexOf(found);
-      console.error("Response snippet:", body.substring(Math.max(0, idx - 100), idx + 200));
+      console.error(
+        "Response snippet:",
+        body.substring(Math.max(0, idx - 100), idx + 200),
+      );
       process.exit(2);
     }
 
     // Heuristic: if body contains 'google' or 'function' and isn't obviously an error, assume OK
-    if (body.length > 100 && (body.includes("google") || body.includes("window.google") || body.includes("function"))) {
-      console.log("Key seems valid: received Maps JS bundle (length:", body.length + ")");
+    if (
+      body.length > 100 &&
+      (body.includes("google") ||
+        body.includes("window.google") ||
+        body.includes("function"))
+    ) {
+      console.log(
+        "Key seems valid: received Maps JS bundle (length:",
+        body.length + ")",
+      );
       process.exit(0);
     }
 
     // Unknown state — print small part of the body
-    console.warn("Unable to conclusively validate key. Response length:", body.length);
+    console.warn(
+      "Unable to conclusively validate key. Response length:",
+      body.length,
+    );
     console.warn(body.substring(0, 400));
     process.exit(2);
   } catch (err) {
