@@ -11,24 +11,12 @@ from business_logic.do_gradient_service import (
     extract_roof_data_from_cv_response,
 )
 
-try:
-    from business_logic.huggingface_cv_service import (
-        analyze_roof_with_huggingface,
-        extract_roof_data_from_hf_response,
-    )
-
-    HUGGINGFACE_AVAILABLE = True
-    HUGGINGFACE_IMPORT_ERROR = None
-except ImportError as hf_error:
-    HUGGINGFACE_AVAILABLE = False
-    HUGGINGFACE_IMPORT_ERROR = hf_error
-
 
 async def analyze_roof_with_cv(lat: float, lng: float) -> Dict:
     """
-    Complete roof analysis pipeline using real CV models:
+    Complete roof analysis pipeline using CV models:
     1. Fetch satellite image from Google Maps
-    2. Analyze roof with Hugging Face segmentation model
+    2. Analyze roof with DO Gradient AI
     3. Detect obstacles with AWS Rekognition
     4. Convert pixel coordinates to lat/lng for frontend
     """
@@ -40,40 +28,17 @@ async def analyze_roof_with_cv(lat: float, lng: float) -> Dict:
     # 2. Calculate meters per pixel for area calculations
     meters_per_pixel = calculate_meters_per_pixel(lat, zoom)
 
-    roof_data = None
-    using_huggingface = False
+    # 3. Analyze roof with Gradient AI
+    gradient_response = await analyze_roof_with_gradient_ai(image_bytes)
+    roof_data = extract_roof_data_from_cv_response(
+        gradient_response, lat, lng, meters_per_pixel, zoom
+    )
+    gradient_model = gradient_response.get("model_version", "gradient_ai_mock")
 
-    if HUGGINGFACE_AVAILABLE:
-        try:
-            cv_response = await analyze_roof_with_huggingface(image_bytes)
-            roof_data = extract_roof_data_from_hf_response(
-                cv_response, lat, lng, meters_per_pixel, zoom
-            )
-            using_huggingface = True
-        except Exception as hf_error:
-            print(
-                f"Hugging Face CV analysis failed, falling back to Gradient AI: {hf_error}"
-            )
-    else:
-        if HUGGINGFACE_IMPORT_ERROR:
-            print(
-                f"Hugging Face dependencies missing "
-                f"({HUGGINGFACE_IMPORT_ERROR}); using Gradient AI fallback"
-            )
-
-    if roof_data is None:
-        gradient_response = await analyze_roof_with_gradient_ai(image_bytes)
-        roof_data = extract_roof_data_from_cv_response(
-            gradient_response, lat, lng, meters_per_pixel, zoom
-        )
-        gradient_model = gradient_response.get("model_version", "gradient_ai_mock")
-    else:
-        gradient_model = None
-
-    # 5. Detect obstacles with AWS Rekognition
+    # 4. Detect obstacles with AWS Rekognition
     obstacle_data = get_enhanced_obstacle_analysis(image_bytes)
 
-    # 6. Update roof data with obstacle information
+    # 5. Update roof data with obstacle information
     roof_data["obstacles"] = {
         "chimneys": obstacle_data.get("chimneys", 0),
         "skylights": obstacle_data.get("skylights", 0),
@@ -81,14 +46,7 @@ async def analyze_roof_with_cv(lat: float, lng: float) -> Dict:
         "hvac_units": obstacle_data.get("hvac_units", 0),
     }
 
-    analysis_type = "huggingface_segformer_b0" if using_huggingface else "gradient_ai"
-    model_name = (
-        "nvidia/segformer-b0-finetuned-ade-512-512"
-        if using_huggingface
-        else gradient_model or "gradient_ai_mock"
-    )
-
-    # 7. Add metadata for frontend and debugging
+    # 6. Add metadata for frontend and debugging
     roof_data["cv_metadata"] = {
         "image_zoom": zoom,
         "meters_per_pixel": meters_per_pixel,
@@ -97,8 +55,8 @@ async def analyze_roof_with_cv(lat: float, lng: float) -> Dict:
             "estimated_shading_percentage", 5.0
         ),
         "model_confidence": roof_data["confidence_score"],
-        "analysis_type": analysis_type,
-        "model_name": model_name,
+        "analysis_type": "gradient_ai",
+        "model_name": gradient_model,
     }
 
     return roof_data
