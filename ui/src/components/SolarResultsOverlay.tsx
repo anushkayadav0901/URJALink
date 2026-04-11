@@ -32,6 +32,17 @@ import { EquityScoreCard } from "./EquityScoreCard";
 import { EquityHeatmap } from "./EquityHeatmap";
 import { EquityActionsPanel } from "./EquityActionsPanel";
 import { BillComparisonUpload } from "./BillComparisonUpload";
+import { FinancingOptions, type FinancingOption } from "./india/FinancingOptions";
+import { InvestmentBreakdownModal } from "./india/InvestmentBreakdownModal";
+import { PeopleLikeYou } from "./india/PeopleLikeYou";
+import { SimplifiedFinancialCard } from "./india/SimplifiedFinancialCard";
+import { ModePanel, type ViewMode } from "./modes/ModePanel";
+import { DecisionMode } from "./modes/DecisionMode";
+import { FutureMode } from "./modes/FutureMode";
+import { InsightsModal } from "./modes/InsightsModal";
+import { StoryModeToggle } from "./story/StoryModeToggle";
+import { StoryContent } from "./story/StoryContent";
+import { EnhancedFinancialCard } from "./enhanced/EnhancedFinancialCard";
 import type { SolarStats } from "@/types/solar";
 
 // Normalize markdown for proper rendering
@@ -103,6 +114,9 @@ export const SolarResultsOverlay = ({
   const { toast } = useToast();
   const [summaryRequestKey, setSummaryRequestKey] = useState(0);
   const [showVoiceWidget, setShowVoiceWidget] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("analysis");
+  const [showInsightsModal, setShowInsightsModal] = useState(false);
+  const [isStoryMode, setIsStoryMode] = useState(false);
 
   // Kubb-generated mutation hooks
   const summaryMutation = useSummarizeMetricsApiV1SummaryPost({
@@ -356,6 +370,18 @@ export const SolarResultsOverlay = ({
     return new Intl.NumberFormat("en-US").format(value);
   };
 
+  // USD to INR conversion (1 USD = ₹83)
+  const usdToINR = (usd: number) => Math.round(usd * 83);
+
+  // Handle insights mode
+  const handleModeChange = (mode: ViewMode) => {
+    if (mode === "insights") {
+      setShowInsightsModal(true);
+    } else {
+      setViewMode(mode);
+    }
+  };
+
   if (!stats) return null;
 
   const solarScore = Math.min(Math.round(stats.roi / 1.5 + 20), 100);
@@ -401,9 +427,14 @@ export const SolarResultsOverlay = ({
             onClick={onClose}
           />
 
-          {/* Main Overlay Card */}
+          {/* Main Overlay Card with Mode Panel */}
           <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center overflow-y-auto p-4 sm:p-8">
-            <motion.div
+            <div className="flex h-full max-h-[90vh] w-full max-w-[1400px] gap-4">
+              {/* Left: Mode Panel */}
+              <ModePanel activeMode={viewMode} onModeChange={handleModeChange} />
+
+              {/* Center: Main Content */}
+              <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -412,7 +443,7 @@ export const SolarResultsOverlay = ({
                 damping: 25,
                 stiffness: 300,
               }}
-              className={`relative flex h-full max-h-[90vh] w-full max-w-4xl flex-col overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 shadow-[0_25px_80px_rgba(15,23,42,0.45)] backdrop-blur-3xl dark:bg-slate-950/70 ${showScoreBreakdown ? "blur-sm" : ""}`}
+              className={`relative flex h-full flex-1 flex-col overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 shadow-[0_25px_80px_rgba(15,23,42,0.45)] backdrop-blur-3xl dark:bg-slate-950/70 ${showScoreBreakdown ? "blur-sm" : ""}`}
             >
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-cyan-400/30 opacity-70 blur-3xl" />
               <div className="absolute inset-0 bg-white/5 dark:bg-slate-950/60" />
@@ -599,6 +630,14 @@ export const SolarResultsOverlay = ({
 
                 {/* Content */}
                 <div className="flex-1 min-h-0 px-6 pb-10">
+                  {/* Story Mode Toggle - Top Left */}
+                  <div className="mb-6">
+                    <StoryModeToggle 
+                      isStoryMode={isStoryMode} 
+                      onToggle={setIsStoryMode} 
+                    />
+                  </div>
+
                   <AnimatePresence mode="wait">
                     {activeTab === "analysis" ? (
                       <motion.div
@@ -608,273 +647,230 @@ export const SolarResultsOverlay = ({
                         exit={{ opacity: 0, x: 20 }}
                         className="p-6 space-y-6"
                       >
-                        {/* Narrative Summary */}
-                        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
-                          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">
-                                Gemini Narrative
-                              </p>
-                              <h3 className="mt-1 flex items-center gap-2 text-xl font-semibold">
-                                <Sparkles className="h-5 w-5 text-amber-200" />
-                                Personalized summary
-                              </h3>
-                            </div>
-                            <div className="text-xs text-white/60">
-                              {summaryModel
-                                ? `Model • ${summaryModel}`
-                                : "Model warming up"}
-                              {summaryGeneratedAt && (
-                                <>
-                                  {" "}
-                                  ·{" "}
-                                  {new Date(
-                                    summaryGeneratedAt,
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="prose prose-sm prose-invert mt-4 min-h-[140px] space-y-3 rounded-2xl border border-white/5 bg-black/20 p-4 prose-headings:text-white prose-a:text-white break-words">
-                            {isSummaryLoading ? (
-                              <div className="space-y-3 text-white/60">
-                                <div className="h-3 w-5/6 rounded-full bg-white/10 animate-pulse" />
-                                <div className="h-3 w-full rounded-full bg-white/10 animate-pulse" />
-                                <div className="h-3 w-4/6 rounded-full bg-white/10 animate-pulse" />
-                              </div>
-                            ) : summaryMarkdown ? (
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {summaryMarkdown}
-                              </ReactMarkdown>
-                            ) : summaryError ? (
-                              <div className="flex flex-col gap-3 text-white/70">
-                                <p>{summaryError}</p>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="secondary"
-                                  onClick={triggerSummaryRefresh}
-                                  className="self-start rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
-                                >
-                                  Try again
-                                </Button>
-                              </div>
-                            ) : (
-                              <p className="text-white/70">
-                                Summary not available yet. Hang tight for Gemini
-                                to respond.
-                              </p>
+                        {isStoryMode ? (
+                          /* Story View */
+                          <StoryContent
+                            systemSizeKw={stats.systemSizeKw}
+                            yearlyEnergyKwh={stats.yearlyEnergyKwh}
+                            annualSavingsINR={usdToINR(stats.annualSavings)}
+                            paybackYears={stats.paybackYears}
+                            systemCostINR={usdToINR(stats.systemCost)}
+                            carbonOffsetKg={stats.carbonOffset}
+                            sunshineHours={stats.sunshineHours}
+                            panelCount={stats.maxPanels}
+                            solarScore={stats.solarScore ?? solarScore}
+                            roofAreaSqft={stats.usableAreaSqft}
+                            totalProfitINR={usdToINR(
+                              stats.fullResponse?.financial_outlook?.net_profit_25_years ?? 0
                             )}
-                          </div>
-                        </div>
-
-                        {/* Quick Stats Grid */}
-                        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                          <StatCard
-                            icon={<Battery className="w-5 h-5" />}
-                            label="Solar Panels"
-                            value={formatNumber(stats.maxPanels)}
-                            color="blue"
                           />
-                          <StatCard
-                            icon={<Zap className="w-5 h-5" />}
-                            label="System Size"
-                            value={`${stats.systemSizeKw.toFixed(1)} kW`}
-                            color="purple"
-                          />
-                          <StatCard
-                            icon={<Sun className="w-5 h-5" />}
-                            label="Annual Energy"
-                            value={`${formatNumber(stats.yearlyEnergyKwh)} kWh`}
-                            color="orange"
-                          />
-                          <StatCard
-                            icon={<Award className="w-5 h-5" />}
-                            label="Solar Score"
-                            value={`${solarScore}/100`}
-                            color="green"
-                          />
-                        </div>
-
-                        {/* Financial & Environmental */}
-                        <div className="grid gap-6 lg:grid-cols-2">
-                          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
-                            <div className="flex items-center justify-between gap-3">
-                              <div>
-                                <h3 className="text-xl font-semibold flex items-center gap-2">
-                                  <DollarSign className="h-5 w-5 text-emerald-300" />
-                                  Financial Outlook
-                                </h3>
-                                <p className="text-sm text-white/70">
-                                  Projected performance across 25 years
-                                </p>
+                        ) : (
+                          /* Data View */
+                          <>
+                            {/* Narrative Summary */}
+                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                  <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">
+                                    Gemini Narrative
+                                  </p>
+                                  <h3 className="mt-1 flex items-center gap-2 text-xl font-semibold">
+                                    <Sparkles className="h-5 w-5 text-amber-200" />
+                                    Personalized summary
+                                  </h3>
+                                </div>
+                                <div className="text-xs text-white/60">
+                                  {summaryModel
+                                    ? `Model • ${summaryModel}`
+                                    : "Model warming up"}
+                                  {summaryGeneratedAt && (
+                                    <>
+                                      {" "}
+                                      ·{" "}
+                                      {new Date(
+                                        summaryGeneratedAt,
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm font-medium">
-                                <TrendingUp className="h-4 w-4" />
-                                {stats.roi}% ROI
-                              </span>
-                            </div>
-                            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  System Cost
-                                </p>
-                                <p className="text-2xl font-semibold">
-                                  {formatCurrency(stats.systemCost)}
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  Annual Savings
-                                </p>
-                                <p className="text-2xl font-semibold">
-                                  {formatCurrency(stats.annualSavings)}
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  Payback
-                                </p>
-                                <p className="text-2xl font-semibold">
-                                  {stats.paybackYears} years
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  ROI Horizon
-                                </p>
-                                <p className="text-2xl font-semibold">
-                                  {stats.roi}%
-                                </p>
-                              </div>
-                            </div>
-                            <div className="mt-6 rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-400/30 to-transparent p-5 text-center shadow-inner">
-                              <p className="text-sm uppercase tracking-[0.4em] text-white/80">
-                                Total 25-Year Value
-                              </p>
-                              <p className="mt-2 text-4xl font-bold">
-                                {formatCurrency(stats.annualSavings * 25)}
-                              </p>
-                              <p className="text-sm text-white/70">
-                                Includes incentives + projected utility
-                                escalation
-                              </p>
-                            </div>
-
-                            {/* Bill Comparison Upload */}
-                            <div className="mt-6">
-                              <BillComparisonUpload
-                                firstYearSavingsNet={stats.annualSavings}
-                                paybackPeriodYears={stats.paybackYears}
-                                monthlySavings={Math.round(
-                                  stats.annualSavings / 12,
+                              <div className="prose prose-sm prose-invert mt-4 min-h-[140px] space-y-3 rounded-2xl border border-white/5 bg-black/20 p-4 prose-headings:text-white prose-a:text-white break-words">
+                                {isSummaryLoading ? (
+                                  <div className="space-y-3 text-white/60">
+                                    <div className="h-3 w-5/6 rounded-full bg-white/10 animate-pulse" />
+                                    <div className="h-3 w-full rounded-full bg-white/10 animate-pulse" />
+                                    <div className="h-3 w-4/6 rounded-full bg-white/10 animate-pulse" />
+                                  </div>
+                                ) : summaryMarkdown ? (
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {summaryMarkdown}
+                                  </ReactMarkdown>
+                                ) : summaryError ? (
+                                  <div className="flex flex-col gap-3 text-white/70">
+                                    <p>{summaryError}</p>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="secondary"
+                                      onClick={triggerSummaryRefresh}
+                                      className="self-start rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
+                                    >
+                                      Try again
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <p className="text-white/70">
+                                    Summary not available yet. Hang tight for Gemini
+                                    to respond.
+                                  </p>
                                 )}
+                              </div>
+                            </div>
+
+                            {/* Quick Stats Grid */}
+                            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                              <StatCard
+                                icon={<Battery className="w-5 h-5" />}
+                                label="Solar Panels"
+                                value={formatNumber(stats.maxPanels)}
+                                color="blue"
+                              />
+                              <StatCard
+                                icon={<Zap className="w-5 h-5" />}
+                                label="System Size"
+                                value={`${stats.systemSizeKw.toFixed(1)} kW`}
+                                color="purple"
+                              />
+                              <StatCard
+                                icon={<Sun className="w-5 h-5" />}
+                                label="Annual Energy"
+                                value={`${formatNumber(stats.yearlyEnergyKwh)} kWh`}
+                                color="orange"
+                              />
+                              <StatCard
+                                icon={<Award className="w-5 h-5" />}
+                                label="Solar Score"
+                                value={`${solarScore}/100`}
+                                color="green"
                               />
                             </div>
-                          </div>
 
-                          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
-                            <div className="flex items-center gap-2">
-                              <Leaf className="h-6 w-6 text-emerald-300" />
-                              <h3 className="text-xl font-semibold">
-                                Environmental Impact
-                              </h3>
-                            </div>
-                            <p className="text-sm text-white/70">
-                              Meaningful offsets for your community footprint
-                            </p>
-                            <div className="mt-6 space-y-5">
-                              <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-2xl bg-emerald-500/15 p-4">
-                                  <Leaf className="h-8 w-8 text-emerald-300" />
-                                </div>
-                                <div>
-                                  <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                    CO₂ offset yearly
-                                  </p>
-                                  <p className="text-3xl font-bold">
-                                    {formatNumber(
-                                      Math.round(stats.carbonOffset / 1000),
-                                    )}{" "}
-                                    <span className="text-lg">tons</span>
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-2xl bg-emerald-500/15 p-4 text-3xl">
-                                  🌳
-                                </div>
-                                <div>
-                                  <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                    Trees Equivalent
-                                  </p>
-                                  <p className="text-3xl font-bold">
-                                    {formatNumber(stats.treesEquivalent)}{" "}
-                                    <span className="text-lg">trees/year</span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  Carbon Offset
-                                </p>
-                                <p className="text-xl font-semibold">
-                                  {formatNumber(stats.carbonOffset)} kg lifetime
-                                </p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                  Trees Planting Power
-                                </p>
-                                <p className="text-xl font-semibold">
-                                  {formatNumber(stats.treesEquivalent * 10)}{" "}
-                                  saplings
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                            {/* Financial & Environmental */}
+                            <div className="grid gap-6 lg:grid-cols-2">
+                              {/* Enhanced Financial Card with All Features */}
+                              <EnhancedFinancialCard
+                                initialPanels={stats.maxPanels}
+                                systemSizeKw={stats.systemSizeKw}
+                                yearlyEnergyKwh={stats.yearlyEnergyKwh}
+                                systemCostINR={usdToINR(stats.systemCost)}
+                                annualSavingsINR={usdToINR(stats.annualSavings)}
+                                paybackYears={stats.paybackYears}
+                              />
 
-                        {/* Opportunity Highlights */}
-                        <div className="grid gap-4 md:grid-cols-3">
-                          {highlightCards.map((card) => (
-                            <div
-                              key={card.label}
-                              className="rounded-2xl border border-white/10 bg-white/5 p-4 text-white shadow-[0_15px_40px_rgba(15,23,42,0.35)] backdrop-blur-2xl"
+                              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
+                                <div className="flex items-center gap-2">
+                                  <Leaf className="h-6 w-6 text-emerald-300" />
+                                  <h3 className="text-xl font-semibold">
+                                    Environmental Impact
+                                  </h3>
+                                </div>
+                                <p className="text-sm text-white/70">
+                                  Meaningful offsets for your community footprint
+                                </p>
+                                <div className="mt-6 space-y-5">
+                                  <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <div className="rounded-2xl bg-emerald-500/15 p-4">
+                                      <Leaf className="h-8 w-8 text-emerald-300" />
+                                    </div>
+                                    <div>
+                                      <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                                        CO₂ offset yearly
+                                      </p>
+                                      <p className="text-3xl font-bold">
+                                        {formatNumber(
+                                          Math.round(stats.carbonOffset / 1000),
+                                        )}{" "}
+                                        <span className="text-lg">tons</span>
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <div className="rounded-2xl bg-emerald-500/15 p-4 text-3xl">
+                                      🌳
+                                    </div>
+                                    <div>
+                                      <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                                        Trees Equivalent
+                                      </p>
+                                      <p className="text-3xl font-bold">
+                                        {formatNumber(stats.treesEquivalent)}{" "}
+                                        <span className="text-lg">trees/year</span>
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                                      Carbon Offset
+                                    </p>
+                                    <p className="text-xl font-semibold">
+                                      {formatNumber(stats.carbonOffset)} kg lifetime
+                                    </p>
+                                  </div>
+                                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                                      Trees Planting Power
+                                    </p>
+                                    <p className="text-xl font-semibold">
+                                      {formatNumber(stats.treesEquivalent * 10)}{" "}
+                                      saplings
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Opportunity Highlights */}
+                            <div className="grid gap-4 md:grid-cols-3">
+                              {highlightCards.map((card) => (
+                                <div
+                                  key={card.label}
+                                  className="rounded-2xl border border-white/10 bg-white/5 p-4 text-white shadow-[0_15px_40px_rgba(15,23,42,0.35)] backdrop-blur-2xl"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
+                                      {card.icon}
+                                    </div>
+                                    <div>
+                                      <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                                        {card.label}
+                                      </p>
+                                      <p className="text-xl font-semibold">
+                                        {card.value}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <p className="mt-3 text-sm text-white/70">
+                                    {card.helper}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* CTA */}
+                            <Button
+                              onClick={handleStreamBoth}
+                              className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-6 py-4 text-base font-semibold text-white shadow-[0_20px_50px_rgba(15,23,42,0.35)] backdrop-blur-2xl transition hover:-translate-y-0.5"
                             >
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
-                                  {card.icon}
-                                </div>
-                                <div>
-                                  <p className="text-xs uppercase tracking-[0.4em] text-white/60">
-                                    {card.label}
-                                  </p>
-                                  <p className="text-xl font-semibold">
-                                    {card.value}
-                                  </p>
-                                </div>
-                              </div>
-                              <p className="mt-3 text-sm text-white/70">
-                                {card.helper}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* CTA */}
-                        <Button
-                          onClick={handleStreamBoth}
-                          className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-6 py-4 text-base font-semibold text-white shadow-[0_20px_50px_rgba(15,23,42,0.35)] backdrop-blur-2xl transition hover:-translate-y-0.5"
-                        >
-                          <Zap className="h-4 w-4" />
-                          <span>Explore installers & incentives</span>
-                        </Button>
+                              <Zap className="h-4 w-4" />
+                              <span>Explore installers & incentives</span>
+                            </Button>
+                          </>
+                        )}
                       </motion.div>
                     ) : activeTab === "equity" ? (
                       <motion.div
@@ -1113,6 +1109,7 @@ export const SolarResultsOverlay = ({
                 </div>
               </div>
             </motion.div>
+            </div>
           </div>
 
           {/* Score Breakdown Modal - Independent positioning */}
@@ -1215,6 +1212,16 @@ export const SolarResultsOverlay = ({
               </>
             )}
           </AnimatePresence>
+
+          {/* Insights Modal */}
+          <InsightsModal
+            isOpen={showInsightsModal}
+            onClose={() => setShowInsightsModal(false)}
+            systemSizeKw={stats.systemSizeKw}
+            yearlyEnergyKwh={stats.yearlyEnergyKwh}
+            annualSavingsINR={usdToINR(stats.annualSavings)}
+            carbonOffsetKg={stats.carbonOffset}
+          />
 
           {/* ElevenLabs Voice Widget - Fixed to bottom right */}
           {showVoiceWidget && stats && (

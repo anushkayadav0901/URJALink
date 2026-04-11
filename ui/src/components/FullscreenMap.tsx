@@ -14,6 +14,8 @@ import { useAgentsIncentivesApiV1AgentsIncentivesPost } from "@/lib/api/hooks/us
 import { apiClientConfig } from "@/lib/api-config";
 import { SolarResultsOverlay } from "./SolarResultsOverlay";
 import type { SolarStats } from "@/types/solar";
+import { isDemoMode, simulateApiDelay, logDemoStatus } from "@/utils/demoMode";
+import { createMockAnalysisResponse } from "@/data/mockData";
 
 const mapContainerStyle = {
   width: "100%",
@@ -355,29 +357,61 @@ export const FullscreenMap = ({
         },
       });
 
-      // Extract state from address
-      const stateCode = extractStateCode(fallbackAddress);
+      // ============================================
+      // DEMO MODE vs PRODUCTION MODE
+      // ============================================
+      
+      let result: any;
 
-      // Convert Google Maps polygon to backend format [[lat, lng], …]
-      const user_polygon = roofPolygon
-        ? roofPolygon.map((p) => [p.lat, p.lng])
-        : undefined;
+      if (isDemoMode()) {
+        // DEMO MODE: Use mock data, no API call
+        logDemoStatus("Analyzing roof");
+        
+        // Simulate API delay
+        await simulateApiDelay();
+        
+        // Convert Google Maps polygon to backend format [[lat, lng], …]
+        const user_polygon = roofPolygon
+          ? roofPolygon.map((p) => [p.lat, p.lng])
+          : undefined;
+        
+        // Create mock response with actual coordinates
+        result = createMockAnalysisResponse(
+          referencePosition.lat,
+          referencePosition.lng,
+          fallbackAddress,
+          user_polygon
+        );
+        
+        console.log("🎭 [DEMO MODE] Using mock analysis data:", result);
+      } else {
+        // PRODUCTION MODE: Real API call
+        logDemoStatus("Analyzing roof");
+        
+        // Extract state from address
+        const stateCode = extractStateCode(fallbackAddress);
 
-      // Extract zip from address
-      const zipMatch = fallbackAddress.match(/\b\d{5}\b/);
-      const zip_code = zipMatch ? zipMatch[0] : undefined;
+        // Convert Google Maps polygon to backend format [[lat, lng], …]
+        const user_polygon = roofPolygon
+          ? roofPolygon.map((p) => [p.lat, p.lng])
+          : undefined;
 
-      // Call via Kubb-generated mutation hook
-      const result = await analyzeMutation.mutateAsync({
-        data: {
-          latitude: referencePosition.lat,
-          longitude: referencePosition.lng,
-          address: fallbackAddress,
-          state: stateCode || "NJ",
-          zip_code,
-          user_polygon,
-        },
-      });
+        // Extract zip from address
+        const zipMatch = fallbackAddress.match(/\b\d{5}\b/);
+        const zip_code = zipMatch ? zipMatch[0] : undefined;
+
+        // Call via Kubb-generated mutation hook
+        result = await analyzeMutation.mutateAsync({
+          data: {
+            latitude: referencePosition.lat,
+            longitude: referencePosition.lng,
+            address: fallbackAddress,
+            state: stateCode || "NJ",
+            zip_code,
+            user_polygon,
+          },
+        });
+      }
 
       // Extract polygon from roof segments (first segment contains the main polygon)
       const polygonCoords =
@@ -410,8 +444,10 @@ export const FullscreenMap = ({
         coordinates: polygon,
       });
 
-      // Prefetch installers and incentives data asynchronously (fire and forget)
-      if (stats.analysisId && stateCode) {
+      // Prefetch installers and incentives data asynchronously (only in production mode)
+      if (!isDemoMode() && stats.analysisId) {
+        const stateCode = extractStateCode(fallbackAddress);
+        const zipMatch = fallbackAddress.match(/\b\d{5}\b/);
         const zipCode = zipMatch ? zipMatch[0] : "00000";
 
         installersMutation.mutate(
