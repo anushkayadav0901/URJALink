@@ -24,13 +24,13 @@ async def test_fetch_economic_inputs_parses_payload(monkeypatch):
         mock_rate,
     )
 
-    result = await economic_data.fetch_economic_inputs(
+    result = await economic_data.fetch_us_economic_inputs(
         latitude=37.77,
         longitude=-122.41,
         state="CA",
     )
 
-    assert result.electricity_rate_usd_per_kwh == 0.23
+    assert result.electricity_rate_per_kwh == 0.23
     assert result.install_cost_per_watt == economic_data.INSTALL_COST_TABLE["CA"]
     assert (
         result.dust_cleanings_per_year
@@ -39,6 +39,6 @@ async def test_fetch_economic_inputs_parses_payload(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_fetch_economic_inputs_requires_state(monkeypatch):
+async def test_fetch_us_economic_inputs_requires_state(monkeypatch):
     with pytest.raises(EconomicDataError):
-        await economic_data.fetch_economic_inputs(latitude=0.0, longitude=0.0)
+        await economic_data.fetch_us_economic_inputs(latitude=0.0, longitude=0.0)

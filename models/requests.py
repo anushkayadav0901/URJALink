@@ -9,13 +9,17 @@ class AnalyzeRequest(BaseModel):
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
     address: str = ""
-    state: str = Field(
-        ...,
+    state: Optional[str] = Field(
+        default=None,
         min_length=2,
         max_length=2,
-        description="US state/territory code (e.g., CA)",
+        description="State/territory code (e.g., CA for US, DL for India). Auto-detected for India.",
     )
     zip_code: Optional[str] = None
+    country: Optional[str] = Field(
+        default=None,
+        description="ISO 3166-1 alpha-2 country code. Auto-detected from coordinates if not provided.",
+    )
     user_polygon: Optional[List[List[float]]] = Field(
         None,
         description="User-drawn polygon coordinates as [[lat, lng], [lat, lng], ...], minimum 3 points",

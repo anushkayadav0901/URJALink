@@ -31,7 +31,7 @@ async def extract_monthly_bill(
         http_client: Optional injected HTTP client (used for testing)
 
     Returns:
-        Monthly bill amount as float (USD)
+        Monthly bill amount as float
 
     Raises:
         ValueError: If GEMINI_API_KEY is not configured
@@ -42,8 +42,10 @@ async def extract_monthly_bill(
         raise ValueError("GEMINI_API_KEY is not configured.")
 
     prompt = (
-        "Extract the total monthly bill amount in USD from this electricity bill. "
-        "Return ONLY the number (e.g., 150.50). If not found, return 0.\n\n"
+        "Extract the total monthly bill amount from this electricity bill. "
+        "The bill may be in any currency (USD, INR, etc). "
+        "Return ONLY the numeric amount (e.g., 150.50 or 2500). "
+        "Do NOT include any currency symbol. If no valid amount found, return -1.\n\n"
         f"Bill text:\n{bill_text[:2000]}\n\n"
         "Amount:"
     )

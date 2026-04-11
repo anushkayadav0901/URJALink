@@ -53,7 +53,7 @@ const generateDenseEquityGrid = (
 ) => {
   const gridPoints = [];
 
-  // Define Princeton area boundaries (expanded for better coverage)
+  // Define area boundaries around the center (expanded for better coverage)
   const bounds = {
     north: center.lat + 0.04, // ~4.5km coverage
     south: center.lat - 0.04,

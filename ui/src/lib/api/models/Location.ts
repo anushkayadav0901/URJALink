@@ -19,4 +19,9 @@ export type Location = {
    * @type string
    */
   address: string;
+  /**
+   * @default "US"
+   * @type string
+   */
+  country?: string;
 };

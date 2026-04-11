@@ -60,7 +60,7 @@ def test_analyze_returns_financial_outlook(mock_econ, mock_nasa, mock_roof):
     mock_roof.return_value = _sample_roof()
     mock_nasa.return_value = _sample_nasa()
     mock_econ.return_value = EconomicInputs(
-        electricity_rate_usd_per_kwh=0.21,
+        electricity_rate_per_kwh=0.21,
         install_cost_per_watt=3.0,
         annual_maintenance_rate=0.012,
         dust_cleanings_per_year=2,
@@ -101,11 +101,19 @@ def test_analyze_handles_economic_data_failure(mock_econ, mock_nasa, mock_roof):
     assert "Economic data unavailable" in response.json()["detail"]
 
 
-def test_analyze_requires_state():
+@patch("api.routes.analyze_roof_with_cv", new_callable=AsyncMock)
+@patch("api.routes.get_nasa_data_cached", new_callable=AsyncMock)
+def test_analyze_us_requires_state(mock_nasa, mock_roof):
+    """US locations still require a state code."""
+    mock_roof.return_value = _sample_roof()
+    mock_nasa.return_value = _sample_nasa()
+
     payload = {
         "latitude": 40.0,
         "longitude": -105.0,
         "address": "Another Address",
     }
     response = client.post("/api/v1/analyze", json=payload)
-    assert response.status_code == 422
+    assert response.status_code == 400
+    assert "State code is required" in response.json()["detail"]
+

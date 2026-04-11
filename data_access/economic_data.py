@@ -10,6 +10,8 @@ import httpx
 
 from core.config import settings
 from models.economics import EconomicInputs
+from data_access.country_detector import detect_country, detect_indian_state
+from data_access.india_economic_data import fetch_india_economic_inputs
 
 EIA_ENDPOINT = "https://api.eia.gov/v2/electricity/retail-sales/data/"
 INSTALL_COST_PATH = (
@@ -109,13 +111,13 @@ def _resolve_maintenance_profile(state: str) -> Dict[str, float]:
     return STATE_MAINTENANCE_PROFILE.get(state, STATE_MAINTENANCE_PROFILE["DEFAULT"])
 
 
-async def fetch_economic_inputs(
+async def fetch_us_economic_inputs(
     latitude: float,
     longitude: float,
     state: Optional[str] = None,
-    zip_code: Optional[str] = None,  # zip retained for future provider integrations
+    zip_code: Optional[str] = None,
 ) -> EconomicInputs:
-    """Fetch electricity rate, install costs, and maintenance assumptions."""
+    """Fetch US-specific economic inputs (EIA rates, USD)."""
     _ = latitude, longitude, zip_code  # currently unused but kept for signature parity
     state_code = _ensure_state(state)
 
@@ -124,9 +126,44 @@ async def fetch_economic_inputs(
     profile = _resolve_maintenance_profile(state_code)
 
     return EconomicInputs(
-        electricity_rate_usd_per_kwh=electricity_rate,
+        electricity_rate_per_kwh=electricity_rate,
         install_cost_per_watt=install_cost,
         annual_maintenance_rate=profile["maintenance_rate"],
         dust_cleanings_per_year=int(profile["cleanings"]),
         dust_cleaning_cost_per_kw=profile["cleaning_cost_per_kw"],
+        currency="USD",
+        country="US",
+    )
+
+
+async def fetch_economic_inputs(
+    latitude: float,
+    longitude: float,
+    state: Optional[str] = None,
+    zip_code: Optional[str] = None,
+    country: Optional[str] = None,
+) -> EconomicInputs:
+    """Fetch electricity rate, install costs, and maintenance assumptions.
+
+    Routes to the appropriate country-specific provider based on
+    the ``country`` parameter or auto-detected from coordinates.
+    """
+    if country is None:
+        country = detect_country(latitude, longitude)
+
+    if country == "IN":
+        # For India, auto-detect state from coordinates if not provided
+        indian_state = state or detect_indian_state(latitude, longitude)
+        return await fetch_india_economic_inputs(
+            latitude=latitude,
+            longitude=longitude,
+            state=indian_state,
+        )
+
+    # Default: US
+    return await fetch_us_economic_inputs(
+        latitude=latitude,
+        longitude=longitude,
+        state=state,
+        zip_code=zip_code,
     )

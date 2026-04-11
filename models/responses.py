@@ -65,6 +65,7 @@ class Location(BaseModel):
     latitude: float
     longitude: float
     address: str
+    country: str = "US"
 
 
 class ScoreComponent(BaseModel):

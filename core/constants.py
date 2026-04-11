@@ -57,3 +57,11 @@ TREES_PER_METRIC_TON: float = (
 FEDERAL_ITC_RATE: float = 0.30
 PANEL_DEGRADATION_RATE: float = 0.005
 ELECTRICITY_INFLATION_RATE: float = 0.025
+
+# India-specific constants -------------------------------------------------------
+# MNRE Central Financial Assistance (CFA) subsidy for residential rooftop solar
+INDIA_CFA_RATE_FIRST_3KW: float = 0.40   # 40% subsidy for first 3 kW
+INDIA_CFA_RATE_3_TO_10KW: float = 0.20   # 20% subsidy for 3–10 kW
+INDIA_ELECTRICITY_INFLATION_RATE: float = 0.03  # ~3% annual tariff increase
+INDIA_CO2_PER_KWH_METRIC_TONS: float = 0.00082  # CEA CO2 Baseline Database v19
+

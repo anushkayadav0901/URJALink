@@ -25,13 +25,18 @@ export type AnalyzeRequest = {
    */
   address?: string;
   /**
-   * @description US state/territory code (e.g., CA)
+   * @description State/territory code (e.g., CA for US, DL for India). Auto-detected for India.
    * @minLength 2
    * @maxLength 2
-   * @type string
+   * @type string | undefined
    */
-  state: string;
+  state?: string | null;
   zip_code?: string | null;
+  /**
+   * @description ISO 3166-1 alpha-2 country code. Auto-detected from coordinates if not provided.
+   * @type string | undefined
+   */
+  country?: string | null;
   /**
    * @description User-drawn polygon coordinates as [[lat, lng], [lat, lng], ...], minimum 3 points
    */

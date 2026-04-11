@@ -373,7 +373,7 @@ export const FullscreenMap = ({
           latitude: referencePosition.lat,
           longitude: referencePosition.lng,
           address: fallbackAddress,
-          state: stateCode || "NJ",
+          state: stateCode || undefined,
           zip_code,
           user_polygon,
         },

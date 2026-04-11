@@ -86,6 +86,41 @@ interface SolarResultsOverlayProps {
   longitude?: number;
 }
 
+// Country-to-currency mapping for common countries
+const COUNTRY_CURRENCY_MAP: Record<string, { code: string; locale: string }> = {
+  IN: { code: "INR", locale: "en-IN" },
+  US: { code: "USD", locale: "en-US" },
+  GB: { code: "GBP", locale: "en-GB" },
+  CA: { code: "CAD", locale: "en-CA" },
+  AU: { code: "AUD", locale: "en-AU" },
+  DE: { code: "EUR", locale: "de-DE" },
+  FR: { code: "EUR", locale: "fr-FR" },
+  JP: { code: "JPY", locale: "ja-JP" },
+  CN: { code: "CNY", locale: "zh-CN" },
+  BR: { code: "BRL", locale: "pt-BR" },
+  MX: { code: "MXN", locale: "es-MX" },
+  KR: { code: "KRW", locale: "ko-KR" },
+  ZA: { code: "ZAR", locale: "en-ZA" },
+  AE: { code: "AED", locale: "ar-AE" },
+  SG: { code: "SGD", locale: "en-SG" },
+  NZ: { code: "NZD", locale: "en-NZ" },
+  CH: { code: "CHF", locale: "de-CH" },
+  SE: { code: "SEK", locale: "sv-SE" },
+  NO: { code: "NOK", locale: "nb-NO" },
+  DK: { code: "DKK", locale: "da-DK" },
+  PL: { code: "PLN", locale: "pl-PL" },
+  TH: { code: "THB", locale: "th-TH" },
+  ID: { code: "IDR", locale: "id-ID" },
+  PH: { code: "PHP", locale: "en-PH" },
+  MY: { code: "MYR", locale: "ms-MY" },
+  NG: { code: "NGN", locale: "en-NG" },
+  EG: { code: "EGP", locale: "ar-EG" },
+  PK: { code: "PKR", locale: "en-PK" },
+  BD: { code: "BDT", locale: "bn-BD" },
+  LK: { code: "LKR", locale: "si-LK" },
+  NP: { code: "NPR", locale: "ne-NP" },
+};
+
 export const SolarResultsOverlay = ({
   stats,
   address,
@@ -103,6 +138,7 @@ export const SolarResultsOverlay = ({
   const { toast } = useToast();
   const [summaryRequestKey, setSummaryRequestKey] = useState(0);
   const [showVoiceWidget, setShowVoiceWidget] = useState(false);
+  const [detectedCurrency, setDetectedCurrency] = useState<{ code: string; locale: string }>({ code: "USD", locale: "en-US" });
 
   // Kubb-generated mutation hooks
   const summaryMutation = useSummarizeMetricsApiV1SummaryPost({
@@ -131,6 +167,39 @@ export const SolarResultsOverlay = ({
   // Markdown is already formatted from the API, just normalize for rendering
   const normalizedInstallersMarkdown = normalizeMarkdown(installersContent);
   const normalizedIncentivesMarkdown = normalizeMarkdown(incentivesContent);
+
+  // Derive currency from backend response (financial_outlook.currency)
+  // Falls back to country-based detection from the COUNTRY_CURRENCY_MAP
+  useEffect(() => {
+    if (!stats) return;
+
+    // Priority 1: Use currency from backend financial outlook
+    const backendCurrency = stats.fullResponse?.financial_outlook?.currency;
+    if (backendCurrency) {
+      const currencyInfo = Object.values(COUNTRY_CURRENCY_MAP).find(
+        (c) => c.code === backendCurrency,
+      );
+      if (currencyInfo) {
+        setDetectedCurrency(currencyInfo);
+        console.log(`💰 Using backend currency: ${backendCurrency}`);
+        return;
+      }
+    }
+
+    // Priority 2: Use country from backend location
+    const country = stats.fullResponse?.location?.country;
+    if (country) {
+      const currencyInfo = COUNTRY_CURRENCY_MAP[country];
+      if (currencyInfo) {
+        setDetectedCurrency(currencyInfo);
+        console.log(`🌍 Using country-based currency: ${country} → ${currencyInfo.code}`);
+        return;
+      }
+    }
+
+    // Fallback: USD
+    setDetectedCurrency({ code: "USD", locale: "en-US" });
+  }, [stats]);
 
   useEffect(() => {
     if (installersContent) {
@@ -344,16 +413,16 @@ export const SolarResultsOverlay = ({
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(detectedCurrency.locale, {
       style: "currency",
-      currency: "USD",
+      currency: detectedCurrency.code,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("en-US").format(value);
+    return new Intl.NumberFormat(detectedCurrency.locale).format(value);
   };
 
   if (!stats) return null;
@@ -402,7 +471,7 @@ export const SolarResultsOverlay = ({
           />
 
           {/* Main Overlay Card */}
-          <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center overflow-y-auto p-4 sm:p-8">
+          <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center overflow-y-auto pt-16 px-4 pb-4 sm:pt-16 sm:px-8 sm:pb-8 no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -412,7 +481,8 @@ export const SolarResultsOverlay = ({
                 damping: 25,
                 stiffness: 300,
               }}
-              className={`relative flex h-full max-h-[90vh] w-full max-w-4xl flex-col overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 shadow-[0_25px_80px_rgba(15,23,42,0.45)] backdrop-blur-3xl dark:bg-slate-950/70 ${showScoreBreakdown ? "blur-sm" : ""}`}
+              className={`relative flex h-full max-h-[90vh] w-full max-w-6xl flex-col overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 shadow-[0_25px_80px_rgba(15,23,42,0.45)] backdrop-blur-3xl dark:bg-slate-950/70 no-scrollbar ${showScoreBreakdown ? "blur-sm" : ""}`}
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-cyan-400/30 opacity-70 blur-3xl" />
               <div className="absolute inset-0 bg-white/5 dark:bg-slate-950/60" />
@@ -422,7 +492,7 @@ export const SolarResultsOverlay = ({
                     setShowVoiceWidget(false);
                     onClose();
                   }}
-                  className="absolute top-5 right-5 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/20 text-white transition hover:bg-white/30"
+                  className="absolute top-7 right-7 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/20 text-white transition hover:bg-white/30"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -772,6 +842,7 @@ export const SolarResultsOverlay = ({
                                 monthlySavings={Math.round(
                                   stats.annualSavings / 12,
                                 )}
+                                currency={detectedCurrency}
                               />
                             </div>
                           </div>
@@ -981,9 +1052,8 @@ export const SolarResultsOverlay = ({
                                 Equity Analysis Unavailable
                               </h3>
                               <p className="text-sm leading-relaxed">
-                                Equity analysis is currently available for
-                                Princeton, NJ area only. We're working to expand
-                                coverage to more regions.
+                                Equity analysis data is limited for this region.
+                                We're working to expand coverage to more areas.
                               </p>
                             </div>
                           </div>

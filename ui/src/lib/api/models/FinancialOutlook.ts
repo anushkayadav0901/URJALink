@@ -36,4 +36,9 @@ export type FinancialOutlook = {
    * @type number
    */
   first_year_savings_net: number;
+  /**
+   * @default "USD"
+   * @type string
+   */
+  currency?: string;
 };

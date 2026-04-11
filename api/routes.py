@@ -50,6 +50,7 @@ from data.precomputed_equity_data import (
     get_solar_deserts,
 )
 from data_access.economic_data import fetch_economic_inputs, EconomicDataError
+from data_access.country_detector import detect_country
 from business_logic.pdf_parser import extract_text_from_pdf, PDFParseError
 from business_logic.bill_extractor import extract_monthly_bill, BillExtractionError
 from business_logic.bill_comparison import calculate_bill_comparison
@@ -63,9 +64,14 @@ router = APIRouter()
 @router.post("/api/v1/analyze", response_model=AnalysisResponse)
 async def analyze(request: AnalyzeRequest):
     """
-    Main analysis endpoint - supports both user-drawn polygons and CV analysis
+    Main analysis endpoint - supports both user-drawn polygons and CV analysis.
+    Auto-detects country from coordinates for multi-country support.
     """
     try:
+        # 0. Auto-detect country from coordinates
+        country = request.country or detect_country(request.latitude, request.longitude)
+        is_india = country == "IN"
+
         # 1. Get NASA solar data (with caching)
         solar_data_result = await get_nasa_data_cached(
             request.latitude, request.longitude
@@ -132,14 +138,16 @@ async def analyze(request: AnalyzeRequest):
             user_address_score=user_equity_breakdown,
             neighborhood_data=neighborhood_data,
             solar_deserts_count=solar_deserts_count,
-            area_description="Princeton, NJ area",
+            area_description=request.address or "Selected area",
         )
 
         # 7. Fetch economic inputs & calculate financial outlook
-        if not request.state:
+        # For India: state is auto-detected from coordinates
+        # For US: state is required
+        if not is_india and not request.state:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="State code is required to compute live financial metrics.",
+                detail="State code is required to compute live financial metrics for US locations.",
             )
 
         try:
@@ -148,6 +156,7 @@ async def analyze(request: AnalyzeRequest):
                 longitude=request.longitude,
                 state=request.state,
                 zip_code=request.zip_code,
+                country=country,
             )
         except EconomicDataError as exc:
             raise HTTPException(
@@ -171,6 +180,7 @@ async def analyze(request: AnalyzeRequest):
                 latitude=request.latitude,
                 longitude=request.longitude,
                 address=request.address,
+                country=country,
             ),
             roof_analysis=RoofAnalysis(
                 total_area_sqft=roof_data["total_area_sqft"],

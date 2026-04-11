@@ -13,3 +13,5 @@ class FinancialOutlook(BaseModel):
     roi_25_years: float
     first_year_savings_gross: float
     first_year_savings_net: float
+    currency: str = "USD"
+

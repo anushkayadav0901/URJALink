@@ -280,3 +280,12 @@ All colors MUST be HSL.
     @apply text-white/80 border-white/30;
   }
 }
+
+/* Hide scrollbar utility - works across all browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -18,13 +18,21 @@ interface BillComparisonUploadProps {
   firstYearSavingsNet: number;
   paybackPeriodYears: number;
   monthlySavings: number;
+  currency?: { code: string; locale: string };
 }
 
 export function BillComparisonUpload({
   firstYearSavingsNet,
   paybackPeriodYears,
   monthlySavings,
+  currency = { code: "USD", locale: "en-US" },
 }: BillComparisonUploadProps) {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(currency.locale, {
+      style: "currency",
+      currency: currency.code,
+      maximumFractionDigits: 2,
+    }).format(amount);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -226,7 +234,7 @@ export function BillComparisonUpload({
                   </h5>
                 </div>
                 <p className="text-3xl font-bold text-white">
-                  ${comparisonResult.current_monthly_bill.toFixed(2)}
+                  {formatCurrency(comparisonResult.current_monthly_bill)}
                 </p>
                 <p className="text-xs text-white/60 mt-1">per month</p>
               </div>
@@ -240,7 +248,7 @@ export function BillComparisonUpload({
                   </h5>
                 </div>
                 <p className="text-3xl font-bold text-emerald-300">
-                  ${Math.abs(comparisonResult.new_monthly_bill).toFixed(2)}
+                  {formatCurrency(Math.abs(comparisonResult.new_monthly_bill))}
                   {comparisonResult.new_monthly_bill < 0 && (
                     <span className="text-lg"> credit</span>
                   )}
@@ -258,19 +266,18 @@ export function BillComparisonUpload({
                 </h5>
               </div>
               <p className="text-4xl font-bold text-emerald-300">
-                $
-                {(
+                {formatCurrency(
                   (comparisonResult.current_monthly_bill -
                     comparisonResult.new_monthly_bill) *
                   12
-                ).toFixed(2)}
+                )}
               </p>
               <p className="text-sm text-white/70 mt-2">
-                Monthly difference: $
-                {(
+                Monthly difference:{" "}
+                {formatCurrency(
                   comparisonResult.current_monthly_bill -
                   comparisonResult.new_monthly_bill
-                ).toFixed(2)}
+                )}
               </p>
             </div>
           </div>

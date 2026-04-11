@@ -4,6 +4,10 @@ Enhanced financial calculations for solar installations.
 This module now requires API-backed economic inputs so that all
 location-specific pricing, maintenance, and dust-mitigation costs
 come from an external provider rather than hard-coded constants.
+
+Supports multiple countries:
+- US: Federal ITC (30%), EIA electricity rates, USD
+- India: MNRE CFA subsidy (40%/20%), CERC tariffs, INR
 """
 
 from typing import Dict
@@ -12,9 +16,35 @@ from core.constants import (
     ELECTRICITY_INFLATION_RATE,
     FEDERAL_ITC_RATE,
     PANEL_DEGRADATION_RATE,
+    INDIA_CFA_RATE_FIRST_3KW,
+    INDIA_CFA_RATE_3_TO_10KW,
+    INDIA_ELECTRICITY_INFLATION_RATE,
 )
 from core.numeric import quantize
 from models.economics import EconomicInputs
+
+
+def _calculate_india_cfa_subsidy(system_size_kw: float, system_cost_gross: float) -> float:
+    """Calculate MNRE Central Financial Assistance subsidy for Indian rooftop solar.
+
+    Current MNRE rates (PM Surya Ghar):
+    - 40% subsidy on first 3 kW
+    - 20% subsidy on capacity between 3-10 kW
+    - No subsidy above 10 kW
+    """
+    cost_per_kw = system_cost_gross / system_size_kw if system_size_kw > 0 else 0
+
+    if system_size_kw <= 3:
+        return system_cost_gross * INDIA_CFA_RATE_FIRST_3KW
+    elif system_size_kw <= 10:
+        subsidy_first_3 = 3 * cost_per_kw * INDIA_CFA_RATE_FIRST_3KW
+        subsidy_rest = (system_size_kw - 3) * cost_per_kw * INDIA_CFA_RATE_3_TO_10KW
+        return subsidy_first_3 + subsidy_rest
+    else:
+        # Above 10 kW: subsidy only on first 10 kW
+        subsidy_first_3 = 3 * cost_per_kw * INDIA_CFA_RATE_FIRST_3KW
+        subsidy_3_to_10 = 7 * cost_per_kw * INDIA_CFA_RATE_3_TO_10KW
+        return subsidy_first_3 + subsidy_3_to_10
 
 
 def calculate_enhanced_financials(
@@ -29,23 +59,37 @@ def calculate_enhanced_financials(
     Args:
         system_size_kw: System size in kilowatts
         annual_generation_kwh: First-year annual generation in kWh
-        economic_inputs: Provider-derived rates/costs
-        include_federal_itc: Include 30% federal Investment Tax Credit
+        economic_inputs: Provider-derived rates/costs (USD or INR)
+        include_federal_itc: Include 30% federal ITC (US only)
 
     Returns:
         Dictionary with detailed financial analysis
     """
-    electricity_rate = economic_inputs.electricity_rate_usd_per_kwh
+    country = economic_inputs.country
+    currency = economic_inputs.currency
+    is_india = country == "IN"
+
+    electricity_rate = economic_inputs.electricity_rate_per_kwh
     cost_per_watt = economic_inputs.install_cost_per_watt
 
     system_cost_gross = system_size_kw * 1000 * cost_per_watt
-    federal_itc_amount = (
-        system_cost_gross * FEDERAL_ITC_RATE if include_federal_itc else 0
-    )
-    system_cost_net = system_cost_gross - federal_itc_amount
+
+    # Calculate subsidy/incentive based on country
+    if is_india:
+        subsidy_amount = _calculate_india_cfa_subsidy(system_size_kw, system_cost_gross)
+        subsidy_label = "mnre_cfa"
+    else:
+        subsidy_amount = (
+            system_cost_gross * FEDERAL_ITC_RATE if include_federal_itc else 0
+        )
+        subsidy_label = "federal_itc"
+
+    system_cost_net = system_cost_gross - subsidy_amount
 
     panel_degradation_rate = PANEL_DEGRADATION_RATE
-    electricity_inflation_rate = ELECTRICITY_INFLATION_RATE
+    electricity_inflation_rate = (
+        INDIA_ELECTRICITY_INFLATION_RATE if is_india else ELECTRICITY_INFLATION_RATE
+    )
     maintenance_cost_rate = economic_inputs.annual_maintenance_rate
     maintenance_cost_annual = system_cost_gross * maintenance_cost_rate
     dust_cleaning_cost_annual = (
@@ -88,7 +132,6 @@ def calculate_enhanced_financials(
     cumulative_savings = 0.0
 
     # Calculate payback based on gross savings (before operational costs)
-    # This provides a more optimistic but still realistic payback period
     for year_data in yearly_breakdown:
         cumulative_savings += year_data["gross_savings"]
         if payback_year is None and cumulative_savings >= system_cost_net:
@@ -103,7 +146,7 @@ def calculate_enhanced_financials(
 
     return {
         "system_cost_gross": round(system_cost_gross),
-        "federal_itc_amount": round(federal_itc_amount),
+        "subsidy_amount": round(subsidy_amount),
         "system_cost_net": round(system_cost_net),
         "cost_per_watt": quantize(cost_per_watt, 2),
         "electricity_rate_current": round(electricity_rate, 3),
@@ -127,11 +170,16 @@ def calculate_enhanced_financials(
         "roi_25_years": round(roi_25_years, 1),
         "first_year_savings_gross": round(first_year_savings),
         "first_year_savings_net": round(first_year_net),
+        "currency": currency,
         "incentives": {
-            "federal_itc": {
-                "enabled": include_federal_itc,
-                "rate": FEDERAL_ITC_RATE,
-                "amount": round(federal_itc_amount),
+            subsidy_label: {
+                "enabled": subsidy_amount > 0,
+                "rate": (
+                    FEDERAL_ITC_RATE
+                    if not is_india
+                    else f"{INDIA_CFA_RATE_FIRST_3KW*100:.0f}%/{INDIA_CFA_RATE_3_TO_10KW*100:.0f}%"
+                ),
+                "amount": round(subsidy_amount),
             }
         },
         "yearly_breakdown": yearly_breakdown[:5],

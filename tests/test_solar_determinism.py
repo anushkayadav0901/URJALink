@@ -114,7 +114,7 @@ def test_solar_score_penalizes_orientation():
 def test_financials_expose_dust_costs():
     """Dust mitigation OpEx should match provider inputs."""
     inputs = EconomicInputs(
-        electricity_rate_usd_per_kwh=0.22,
+        electricity_rate_per_kwh=0.22,
         install_cost_per_watt=3.1,
         annual_maintenance_rate=0.012,
         dust_cleanings_per_year=3,

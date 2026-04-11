@@ -1,0 +1,478 @@
+{
+  "_source": "NoBroker.in blog - Electricity Rate per Unit in India 2026",
+  "_updated": "2026-04-12",
+  "_notes": "Slab-based residential and commercial rates. For solar analysis, we use a weighted average for ~250-300 units/month typical household consumption.",
+  
+  "DL": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 200, "rate": 3.00},
+        {"min": 201, "max": 400, "rate": 5.00},
+        {"min": 401, "max": 800, "rate": 6.50},
+        {"min": 801, "max": 1200, "rate": 7.00},
+        {"min": 1201, "max": null, "rate": 8.00}
+      ],
+      "effective_avg_rate": 4.00
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 200, "rate": 4.00},
+        {"min": 201, "max": 400, "rate": 6.00},
+        {"min": 401, "max": 800, "rate": 7.50},
+        {"min": 801, "max": 1200, "rate": 8.50},
+        {"min": 1201, "max": null, "rate": 9.00}
+      ],
+      "effective_avg_rate": 7.00
+    }
+  },
+
+  "PB": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 4.00},
+        {"min": 101, "max": 200, "rate": 6.00},
+        {"min": 201, "max": 300, "rate": 6.75},
+        {"min": 301, "max": null, "rate": 7.50}
+      ],
+      "effective_avg_rate": 5.58
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.50}
+      ],
+      "effective_avg_rate": 8.50
+    }
+  },
+
+  "UP": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.50},
+        {"min": 101, "max": 200, "rate": 5.00},
+        {"min": 201, "max": 400, "rate": 6.50},
+        {"min": 401, "max": null, "rate": 8.00}
+      ],
+      "effective_avg_rate": 5.17
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 7.00},
+        {"min": 101, "max": 300, "rate": 9.00},
+        {"min": 301, "max": 500, "rate": 9.50},
+        {"min": 501, "max": null, "rate": 10.00}
+      ],
+      "effective_avg_rate": 8.83
+    }
+  },
+
+  "MH": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 4.43},
+        {"min": 101, "max": 300, "rate": 9.64},
+        {"min": 301, "max": 500, "rate": 12.83},
+        {"min": 501, "max": null, "rate": 14.33}
+      ],
+      "effective_avg_rate": 8.38
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 8.40},
+        {"min": 101, "max": 300, "rate": 12.00},
+        {"min": 301, "max": 500, "rate": 13.50},
+        {"min": 501, "max": null, "rate": 16.00}
+      ],
+      "effective_avg_rate": 12.48
+    }
+  },
+
+  "HR": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 2.20},
+        {"min": 51, "max": 100, "rate": 2.70},
+        {"min": 101, "max": 150, "rate": 2.95},
+        {"min": 151, "max": 300, "rate": 5.25},
+        {"min": 301, "max": 500, "rate": 6.45},
+        {"min": 501, "max": null, "rate": 7.10}
+      ],
+      "effective_avg_rate": 4.30
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 7.00},
+        {"min": 101, "max": 200, "rate": 9.00},
+        {"min": 201, "max": 400, "rate": 10.00},
+        {"min": 401, "max": null, "rate": 11.50}
+      ],
+      "effective_avg_rate": 9.38
+    }
+  },
+
+  "BR": {
+    "_note": "Average of North Bihar and South Bihar rates",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.88},
+        {"min": 101, "max": 200, "rate": 5.00},
+        {"min": 201, "max": 400, "rate": 6.25},
+        {"min": 401, "max": null, "rate": 7.75}
+      ],
+      "effective_avg_rate": 5.21
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 7.75},
+        {"min": 101, "max": 200, "rate": 9.00},
+        {"min": 201, "max": 400, "rate": 10.50},
+        {"min": 401, "max": null, "rate": 12.25}
+      ],
+      "effective_avg_rate": 9.88
+    }
+  },
+
+  "RJ": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 150, "rate": 4.75},
+        {"min": 151, "max": 300, "rate": 6.50},
+        {"min": 301, "max": null, "rate": 7.95}
+      ],
+      "effective_avg_rate": 5.63
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 200, "rate": 7.55},
+        {"min": 201, "max": 500, "rate": 8.85},
+        {"min": 501, "max": null, "rate": 8.95}
+      ],
+      "effective_avg_rate": 8.45
+    }
+  },
+
+  "TN": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 400, "rate": 4.95},
+        {"min": 401, "max": 500, "rate": 6.65},
+        {"min": 501, "max": 600, "rate": 8.80},
+        {"min": 601, "max": 800, "rate": 9.95},
+        {"min": 801, "max": null, "rate": 11.05}
+      ],
+      "effective_avg_rate": 4.95
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.25}
+      ],
+      "effective_avg_rate": 8.25
+    }
+  },
+
+  "GJ": {
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.60},
+        {"min": 101, "max": 200, "rate": 4.85},
+        {"min": 201, "max": 300, "rate": 6.10},
+        {"min": 301, "max": null, "rate": 7.30}
+      ],
+      "effective_avg_rate": 5.46
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": 200, "rate": 8.00},
+        {"min": 201, "max": 500, "rate": 9.00},
+        {"min": 501, "max": null, "rate": 10.50}
+      ],
+      "effective_avg_rate": 9.17
+    }
+  },
+
+  "KA": {
+    "_note": "BESCOM rates (Bangalore region), approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 4.10},
+        {"min": 51, "max": 100, "rate": 5.55},
+        {"min": 101, "max": 200, "rate": 7.10},
+        {"min": 201, "max": null, "rate": 8.15}
+      ],
+      "effective_avg_rate": 6.23
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.50}
+      ],
+      "effective_avg_rate": 8.50
+    }
+  },
+
+  "AP": {
+    "_note": "APSPDCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 1.90},
+        {"min": 51, "max": 100, "rate": 3.20},
+        {"min": 101, "max": 200, "rate": 4.50},
+        {"min": 201, "max": 300, "rate": 6.00},
+        {"min": 301, "max": null, "rate": 8.75}
+      ],
+      "effective_avg_rate": 4.87
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.50}
+      ],
+      "effective_avg_rate": 8.50
+    }
+  },
+
+  "TS": {
+    "_note": "TSSPDCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.50},
+        {"min": 101, "max": 200, "rate": 5.00},
+        {"min": 201, "max": 300, "rate": 7.00},
+        {"min": 301, "max": null, "rate": 9.50}
+      ],
+      "effective_avg_rate": 6.25
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 9.00}
+      ],
+      "effective_avg_rate": 9.00
+    }
+  },
+
+  "KL": {
+    "_note": "KSEB rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 3.25},
+        {"min": 51, "max": 100, "rate": 4.05},
+        {"min": 101, "max": 150, "rate": 5.10},
+        {"min": 151, "max": 200, "rate": 6.95},
+        {"min": 201, "max": 300, "rate": 8.20},
+        {"min": 301, "max": null, "rate": 9.15}
+      ],
+      "effective_avg_rate": 5.93
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.80}
+      ],
+      "effective_avg_rate": 8.80
+    }
+  },
+
+  "WB": {
+    "_note": "WBSEDCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 25, "rate": 5.41},
+        {"min": 26, "max": 60, "rate": 6.18},
+        {"min": 61, "max": 100, "rate": 6.87},
+        {"min": 101, "max": 200, "rate": 7.51},
+        {"min": 201, "max": null, "rate": 9.27}
+      ],
+      "effective_avg_rate": 7.05
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 9.50}
+      ],
+      "effective_avg_rate": 9.50
+    }
+  },
+
+  "MP": {
+    "_note": "MPEB rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 3.70},
+        {"min": 51, "max": 150, "rate": 5.00},
+        {"min": 151, "max": 300, "rate": 6.20},
+        {"min": 301, "max": null, "rate": 7.50}
+      ],
+      "effective_avg_rate": 5.60
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.50}
+      ],
+      "effective_avg_rate": 8.50
+    }
+  },
+
+  "CG": {
+    "_note": "CSPDCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.50},
+        {"min": 101, "max": 200, "rate": 4.50},
+        {"min": 201, "max": 400, "rate": 5.50},
+        {"min": 401, "max": null, "rate": 6.50}
+      ],
+      "effective_avg_rate": 4.75
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 7.50}
+      ],
+      "effective_avg_rate": 7.50
+    }
+  },
+
+  "JH": {
+    "_note": "JBVNL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.60},
+        {"min": 101, "max": 200, "rate": 5.10},
+        {"min": 201, "max": 400, "rate": 5.80},
+        {"min": 401, "max": null, "rate": 6.80}
+      ],
+      "effective_avg_rate": 5.13
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.00}
+      ],
+      "effective_avg_rate": 8.00
+    }
+  },
+
+  "OR": {
+    "_note": "TPCODL/TPSODL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 50, "rate": 3.00},
+        {"min": 51, "max": 200, "rate": 4.80},
+        {"min": 201, "max": 400, "rate": 5.80},
+        {"min": 401, "max": null, "rate": 6.20}
+      ],
+      "effective_avg_rate": 4.90
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 7.80}
+      ],
+      "effective_avg_rate": 7.80
+    }
+  },
+
+  "AS": {
+    "_note": "APDCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 4.50},
+        {"min": 101, "max": 200, "rate": 5.50},
+        {"min": 201, "max": null, "rate": 6.50}
+      ],
+      "effective_avg_rate": 5.50
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.00}
+      ],
+      "effective_avg_rate": 8.00
+    }
+  },
+
+  "GA": {
+    "_note": "Goa Electricity Department rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 2.00},
+        {"min": 101, "max": 200, "rate": 3.50},
+        {"min": 201, "max": 400, "rate": 4.50},
+        {"min": 401, "max": null, "rate": 5.00}
+      ],
+      "effective_avg_rate": 3.50
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 6.50}
+      ],
+      "effective_avg_rate": 6.50
+    }
+  },
+
+  "HP": {
+    "_note": "HPSEB rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 60, "rate": 2.90},
+        {"min": 61, "max": 125, "rate": 4.40},
+        {"min": 126, "max": 300, "rate": 5.45},
+        {"min": 301, "max": null, "rate": 6.20}
+      ],
+      "effective_avg_rate": 4.74
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 7.00}
+      ],
+      "effective_avg_rate": 7.00
+    }
+  },
+
+  "UK": {
+    "_note": "UPCL rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.50},
+        {"min": 101, "max": 200, "rate": 4.50},
+        {"min": 201, "max": 400, "rate": 5.50},
+        {"min": 401, "max": null, "rate": 6.50}
+      ],
+      "effective_avg_rate": 4.75
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 7.50}
+      ],
+      "effective_avg_rate": 7.50
+    }
+  },
+
+  "JK": {
+    "_note": "JKPDD rates, approximate 2026",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 1.54},
+        {"min": 101, "max": 200, "rate": 2.48},
+        {"min": 201, "max": null, "rate": 3.52}
+      ],
+      "effective_avg_rate": 2.51
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 5.00}
+      ],
+      "effective_avg_rate": 5.00
+    }
+  },
+
+  "IN": {
+    "_note": "National average fallback",
+    "residential": {
+      "slabs": [
+        {"min": 0, "max": 100, "rate": 3.50},
+        {"min": 101, "max": 200, "rate": 5.00},
+        {"min": 201, "max": 400, "rate": 6.50},
+        {"min": 401, "max": null, "rate": 8.00}
+      ],
+      "effective_avg_rate": 5.50
+    },
+    "commercial": {
+      "slabs": [
+        {"min": 0, "max": null, "rate": 8.50}
+      ],
+      "effective_avg_rate": 8.50
+    }
+  }
+}
