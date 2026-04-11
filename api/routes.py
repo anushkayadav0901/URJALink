@@ -4,6 +4,7 @@ from models.requests import (
     AgentsRequest,
     SummaryRequest,
     BillComparisonRequest,
+    AreaAnalysisRequest,
 )
 from models.responses import (
     AnalysisResponse,
@@ -19,6 +20,7 @@ from models.responses import (
     InstallersResponse,
     IncentivesResponse,
     BillComparisonResponse,
+    AreaAnalysisResponse,
 )
 from models.financial import FinancialOutlook
 from business_logic.solar_data import get_nasa_data_cached
@@ -51,6 +53,7 @@ from data_access.economic_data import fetch_economic_inputs, EconomicDataError
 from business_logic.pdf_parser import extract_text_from_pdf, PDFParseError
 from business_logic.bill_extractor import extract_monthly_bill, BillExtractionError
 from business_logic.bill_comparison import calculate_bill_comparison
+from business_logic.area_analysis import analyze_area
 import uuid
 from datetime import datetime
 
@@ -382,4 +385,34 @@ async def bill_comparison(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Bill comparison failed: {str(exc)}",
+        ) from exc
+
+
+@router.post("/api/v1/area-analysis", response_model=AreaAnalysisResponse)
+async def area_analysis(request: AreaAnalysisRequest):
+    """
+    Analyse an area (e.g. "Dwarka Sector 3") and return solar sweet spots.
+
+    Uses Google Geocoding API to find the area bounds, samples a grid of
+    points, and calls the Google Solar API for each to identify the best
+    locations for solar panel installation.
+    """
+    try:
+        result = await analyze_area(
+            query=request.query,
+            grid_size=request.grid_size,
+        )
+        return AreaAnalysisResponse(**result)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Area analysis failed: {str(exc)}",
         ) from exc

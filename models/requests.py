@@ -62,3 +62,20 @@ class BillComparisonRequest(BaseModel):
         ..., gt=0, description="Payback period in years"
     )
     monthly_savings: float = Field(..., gt=0, description="Monthly savings in USD")
+
+
+class AreaAnalysisRequest(BaseModel):
+    """Request for area-level solar sweet-spot analysis."""
+
+    query: str = Field(
+        ...,
+        min_length=2,
+        max_length=500,
+        description="Area name or address, e.g. 'Dwarka Sector 3, Delhi'",
+    )
+    grid_size: int = Field(
+        default=4,
+        ge=2,
+        le=8,
+        description="Grid resolution NxN for sampling points across the area",
+    )

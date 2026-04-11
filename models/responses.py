@@ -140,3 +140,36 @@ class BillComparisonResponse(BaseModel):
 
     current_monthly_bill: float
     new_monthly_bill: float
+
+
+class SolarSpot(BaseModel):
+    """A single building/location identified as a solar sweet spot."""
+
+    latitude: float
+    longitude: float
+    solar_score: int  # 0-100 ranking
+    max_panels: int
+    roof_area_m2: float
+    sunshine_hours_per_year: float
+    yearly_energy_kwh: float
+    carbon_offset_kg_per_year: float
+    imagery_quality: Optional[str] = None
+
+
+class AreaBounds(BaseModel):
+    """Geographic bounding box of the analysed area."""
+
+    ne_lat: float
+    ne_lng: float
+    sw_lat: float
+    sw_lng: float
+
+
+class AreaAnalysisResponse(BaseModel):
+    """Response for area-level solar sweet-spot analysis."""
+
+    query: str
+    bounds: AreaBounds
+    total_points_sampled: int
+    spots: List[SolarSpot]
+    best_spot: Optional[SolarSpot] = None
