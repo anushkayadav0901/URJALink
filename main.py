@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from api.routes import router
@@ -10,21 +9,6 @@ app = FastAPI(
     title="Solar Analysis API",
     description="Calculate solar potential for any location",
     version="1.0.0",
-)
-
-# CORS for frontend — origins from env (comma-separated) or localhost defaults
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "")
-allowed_origins = (
-    [o.strip() for o in _raw_origins.split(",") if o.strip()]
-    if _raw_origins
-    else ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"]
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 # Serve static files
