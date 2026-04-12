@@ -67,7 +67,6 @@ class BillComparisonRequest(BaseModel):
     )
     monthly_savings: float = Field(..., gt=0, description="Monthly savings in USD")
 
-
 class AreaAnalysisRequest(BaseModel):
     """Request for area-level solar sweet-spot analysis."""
 

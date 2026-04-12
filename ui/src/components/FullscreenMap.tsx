@@ -13,6 +13,7 @@ import { useAgentsInstallersApiV1AgentsInstallersPost } from "@/lib/api/hooks/us
 import { useAgentsIncentivesApiV1AgentsIncentivesPost } from "@/lib/api/hooks/useAgentsIncentivesApiV1AgentsIncentivesPost";
 import { apiClientConfig } from "@/lib/api-config";
 import { SolarResultsOverlay } from "./SolarResultsOverlay";
+import { FeaturePanel } from "./feature-panels/FeaturePanel";
 import type { SolarStats } from "@/types/solar";
 
 const mapContainerStyle = {
@@ -715,6 +716,11 @@ export const FullscreenMap = ({
         latitude={markerPosition?.lat}
         longitude={markerPosition?.lng}
       />
+
+      {/* Feature Panels - Extension Layer */}
+      {showResults && analysisResults && (
+        <FeaturePanel stats={analysisResults} />
+      )}
     </div>
   );
 };
